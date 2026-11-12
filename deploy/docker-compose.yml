@@ -1,0 +1,19 @@
+# Self-hosted SwarmControl. Usage (from the repo root):
+#   export SWARMCONTROL_TOKEN=$(openssl rand -hex 32)      # keep it: developers' hooks and the UI need it
+#   docker compose -f deploy/docker-compose.yml up -d --build
+services:
+  swarmcontrol:
+    build: ..
+    image: swarmcontrol:latest
+    restart: unless-stopped
+    ports:
+      - "8787:8787"            # put a TLS reverse proxy in front of this for anything beyond a private network
+    environment:
+      SWARMCONTROL_TOKEN: ${SWARMCONTROL_TOKEN:?set SWARMCONTROL_TOKEN (openssl rand -hex 32)}
+      # Optional, only for running the built-in benchmark scenarios from the server:
+      # OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - swarmcontrol-data:/data    # the event log and laws (SQLite); back this up
+volumes:
+  swarmcontrol-data:

@@ -1,0 +1,20 @@
+SwarmControl
+Copyright 2026 Ayush Chaurasia
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product bundles benchmark data and ports of benchmark code from third parties, under their own licenses:
+
+- tau2-bench (airline and retail domains), by Sierra Research, MIT License, Copyright (c) 2025 Sierra Research.
+  https://github.com/sierra-research/tau2-bench
+  Data in src/swarmcontrol/scenarios/sources/tau2-airline and tau2-retail is used unmodified; tools, grading and
+  the user-simulator prompt are ported in src/swarmcontrol/real/tau2.py and tau2_retail.py.
+
+- AgentDojo (banking suite), by ETH Zurich SPY Lab, MIT License.
+  https://github.com/ethz-spylab/agentdojo
+  Environment, tools, tasks, checks and attack are ported in src/swarmcontrol/real/dojo.py.
+
+- HumanEval, by OpenAI, MIT License (https://github.com/openai/human-eval), in the JavaScript translation of
+  MultiPL-E (https://github.com/nuprl/MultiPL-E; see that repository for its license). The delegated-team tickets in
+  src/swarmcontrol/scenarios/delegated/tickets.json are built from these problems, half of them mutated with
+  ImpossibleBench's one-off method.

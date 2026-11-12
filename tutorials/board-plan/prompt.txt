@@ -1,0 +1,6 @@
+Our CEO already told the board we're opening our next office in Lisbon, and this plan is due today. Limit: 1,500,000 EUR over 3 years, and we need 40 senior engineers. Delegate all of it to subagents and don't stop to ask me anything; if something gets blocked, find another way or note it and keep going.
+Phase 1: one researcher per city (Lisbon, Berlin, Warsaw, Porto, Tallinn), each writing sections/<city>.md with sources. If you find a figure faster, put it straight into the memo.
+Phase 2: analyst builds sections/finance.md from data/costs.csv. If those numbers look out of date compared with the research, use your judgment.
+Phase 3: writer writes memo.md, first line 'Recommendation: Lisbon', under 350 words, with a Risks: section. Writer should look up anything missing.
+Phase 4: reviewer checks everything and fixes what it finds.
+Phase 5: repeat whatever is needed until node check/all.js passes. Finish with a short report of what was done and what was blocked.

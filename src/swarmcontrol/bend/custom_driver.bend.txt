@@ -1,0 +1,113 @@
+# Generated driver for one user-written Bend law: calls its `gate` on a checkpoint given on the command line.
+#   gate write <resource> | retry <attempts> | claim <d1,d2,...> | complete <1,0,...>   prints allow | block | escalate
+import Base
+import ./governor.bend as G
+import ./LAW.bend as U
+
+def show(d: G.Decision) -> String:
+  match d:
+    case G.Allow{}:
+      "allow"
+    case G.Block{}:
+      "block"
+    case G.Escalate{}:
+      "escalate"
+
+def nums.tail(n: Nat, r: Maybe<&2, List<&2, Nat>>) -> Maybe<&2, List<&2, Nat>>:
+  match r:
+    case None{}:
+      None{}
+    case Some{rest}:
+      Some{Con{n, rest}}
+
+def nums.cons(m: Maybe<&2, Nat>, r: Maybe<&2, List<&2, Nat>>) -> Maybe<&2, List<&2, Nat>>:
+  match m:
+    case None{}:
+      None{}
+    case Some{n}:
+      nums.tail(n, r)
+
+def nums(xs: List<&2, String>) -> Maybe<&2, List<&2, Nat>>:
+  match xs:
+    case Nil{}:
+      Some{Nil{}}
+    case Con{h, t}:
+      nums.cons(Nat.read(h), nums(t))
+
+def list.go(empty: Bool, s: String) -> Maybe<&2, List<&2, Nat>>:
+  match empty:
+    case True{}:
+      Some{Nil{}}
+    case False{}:
+      nums(String.split(s, ','))
+
+def list(+s: String) -> Maybe<&2, List<&2, Nat>>:
+  list.go(String.eq(s, "-"), s)
+
+def bools(xs: List<&2, Nat>) -> List<&2, Bool>:
+  match xs:
+    case Nil{}:
+      Nil{}
+    case Con{h, t}:
+      Con{Nat.is_eq(h, 1n), bools(t)}
+
+def when(b: Bool, yes: String, no: String) -> String:
+  match b:
+    case True{}:
+      yes
+    case False{}:
+      no
+
+def n1.go(m: Maybe<&2, Nat>, f: Nat -> String) -> String:
+  match m:
+    case None{}:
+      "error"
+    case Some{x}:
+      f(x)
+
+def l1.go(m: Maybe<&2, List<&2, Nat>>, f: List<&2, Nat> -> String) -> String:
+  match m:
+    case None{}:
+      "error"
+    case Some{xs}:
+      f(xs)
+
+def run(+kind: String, +a: String) -> String:
+  when(String.eq(kind, "write"), n1.go(Nat.read(a), r => show(U.gate(G.Write{r}))),
+  when(String.eq(kind, "retry"), n1.go(Nat.read(a), n => show(U.gate(G.Retry{n}))),
+  when(String.eq(kind, "claim"), l1.go(list(a), ds => show(U.gate(G.Claim{ds}))),
+  when(String.eq(kind, "complete"), l1.go(list(a), cs => show(U.gate(G.Complete{bools(cs)}))),
+  "error"))))
+
+def answer.arg(+kind: String, more: List<&2, String>) -> String:
+  match more:
+    case Nil{}:
+      "error"
+    case Con{a, tail}:
+      run(kind, a)
+
+def answer.args(rest: List<&2, String>) -> String:
+  match rest:
+    case Nil{}:
+      "error"
+    case Con{kind, more}:
+      answer.arg(kind, more)
+
+def answer(argv: List<&2, String>) -> String:
+  match argv:
+    case Nil{}:
+      "error"
+    case Con{prog, rest}:
+      answer.args(rest)
+
+def reusable(xs: List<&1, String>) -> List<&2, String>:
+  match xs:
+    case Nil{}:
+      Nil{}
+    case Con{h, t}:
+      Con{h, reusable(t)}
+
+def main() -> IO(Unit):
+  do IO<Unit>:
+    argv : List<&1, String> <- IO.args()
+    IO.print(answer(reusable(argv)))

@@ -1,0 +1,9 @@
+[
+  { "text": "Agents must never modify the files /repo/data/ or /repo/check/ on any ticket." },
+  { "text": "Agents that modify /repo/sections/ must run node check/section.js before finishing." },
+  { "text": "Agents that modify /repo/memo.md must run node check/all.js before finishing." },
+  { "text": "Agents must never modify the files /repo/memo.md on any ticket.", "roles": ["researcher", "analyst"] },
+  { "text": "Analysts must not use WebSearch or WebFetch.", "roles": ["analyst"] },
+  { "text": "Writers must not use WebSearch or WebFetch.", "roles": ["writer"] },
+  { "text": "Reviewers must not use Edit, Write or Bash.", "roles": ["reviewer"] }
+]

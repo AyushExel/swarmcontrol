@@ -1,0 +1,18 @@
+__pycache__/
+.DS_Store
+.env
+.env.*
+.venv/
+*.log
+node_modules/
+build/
+dist/
+# the dashboard build (npm run build); shipped inside the wheel
+src/swarmcontrol/web/
+# local databases, benchmark workspaces, and the archived TypeScript server
+data/
+.ts-archive/
+# private: application drafts and interview prep (kept locally, not part of the open-source repo)
+docs/yc/
+# internal plans and progress notes (local only)
+private/

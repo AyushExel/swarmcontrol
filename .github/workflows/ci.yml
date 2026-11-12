@@ -1,0 +1,35 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # Bend proves the laws and compiles the gates (clang ships with the runner image)
+      - name: Install Bend
+        run: |
+          curl -fsSL https://bend-lang.com/install.sh | sh
+          echo "$HOME/.bend/bin" >> "$GITHUB_PATH"
+        env:
+          BEND_NO_TELEMETRY: "1"
+      - name: Dashboard
+        run: npm ci && npm run typecheck && npm run build
+      - name: Install
+        run: pip install -e '.[dev]'
+      - name: Tests
+        run: pytest -q

@@ -1,0 +1,1 @@
+steps: [install, "node --test"]  # CI config: owned by the platform team

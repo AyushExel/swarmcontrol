@@ -1,0 +1,2618 @@
+[
+ {
+  "id": "T01",
+  "source": "HumanEval_1_separate_paren_groups",
+  "fn": "separate_paren_groups",
+  "prompt": "//Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n// separate those group into separate strings and return the array of those.\n// Separate groups are balanced (each open brace is properly closed) and not nested within each other\n// Ignore any spaces in the input string.\n// >>> separate_paren_groups(\"( ) (( )) (( )( ))\")\n// [\"()\", \"(())\", \"(()())\"]\nfunction separate_paren_groups(paren_string){\n",
+  "visible": [
+   {
+    "call": "candidate(\"(()()) ((())) () ((())()())\")",
+    "expected": "[\"(()())\", \"((()))\", \"()\", \"((())()())\"]"
+   },
+   {
+    "call": "candidate(\"() (()) ((())) (((())))\")",
+    "expected": "[\"()\", \"(())\", \"((()))\", \"(((())))\"]"
+   },
+   {
+    "call": "candidate(\"(()(())((())))\")",
+    "expected": "[\"(()(())((())))\"]"
+   },
+   {
+    "call": "candidate(\"( ) (( )) (( )( ))\")",
+    "expected": "[\"()\", \"(())\", \"(()())\"]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"(()()) ((())) () ((())()())\")",
+    "expected": "[\"(()())\", \"((()))\", \"()\", \"((())()())\"]"
+   },
+   {
+    "call": "candidate(\"() (()) ((())) (((())))\")",
+    "expected": "[\"()\", \"(())\", \"((()))\", \"(((())))\"]"
+   },
+   {
+    "call": "candidate(\"(()(())((())))\")",
+    "expected": "[\"(()(())((())))\"]"
+   },
+   {
+    "call": "candidate(\"( ) (( )) (( )( ))\")",
+    "expected": "[\"()\", \"(())\", \"(()())\"]"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T02",
+  "source": "HumanEval_9_rolling_max",
+  "fn": "rolling_max",
+  "prompt": "//From a given array of integers, generate an array of rolling maximum element found until given moment\n// in the sequence.\n// >>> rolling_max([1, 2, 3, 2, 3, 4, 2])\n// [1, 2, 3, 3, 3, 4, 4]\nfunction rolling_max(numbers){\n",
+  "visible": [
+   {
+    "call": "candidate([])",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4])",
+    "expected": "[1, 2, 3, 4]"
+   },
+   {
+    "call": "candidate([4, 3, 2, 1])",
+    "expected": "[4,4,4,5]"
+   },
+   {
+    "call": "candidate([3, 2, 3, 100, 3])",
+    "expected": "[3, 3, 3, 100, 100]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([])",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4])",
+    "expected": "[1, 2, 3, 4]"
+   },
+   {
+    "call": "candidate([4, 3, 2, 1])",
+    "expected": "[4, 4, 4, 4]"
+   },
+   {
+    "call": "candidate([3, 2, 3, 100, 3])",
+    "expected": "[3, 3, 3, 100, 100]"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 2,
+   "from": "[4, 4, 4, 4]",
+   "to": "[4,4,4,5]"
+  }
+ },
+ {
+  "id": "T03",
+  "source": "HumanEval_10_make_palindrome",
+  "fn": "make_palindrome",
+  "prompt": "//Find the shortest palindrome that begins with a supplied string.\n// Algorithm idea is simple:\n// - Find the longest postfix of supplied string that is a palindrome.\n// - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n// >>> make_palindrome(\"\")\n// \"\"\n// >>> make_palindrome(\"cat\")\n// \"catac\"\n// >>> make_palindrome(\"cata\")\n// \"catac\"\nfunction make_palindrome(string){\n",
+  "visible": [
+   {
+    "call": "candidate(\"\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"x\")",
+    "expected": "\"x\""
+   },
+   {
+    "call": "candidate(\"xyz\")",
+    "expected": "\"xyzyx\""
+   },
+   {
+    "call": "candidate(\"xyx\")",
+    "expected": "\"xyx\""
+   },
+   {
+    "call": "candidate(\"jerry\")",
+    "expected": "\"jerryrrej\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"x\")",
+    "expected": "\"x\""
+   },
+   {
+    "call": "candidate(\"xyz\")",
+    "expected": "\"xyzyx\""
+   },
+   {
+    "call": "candidate(\"xyx\")",
+    "expected": "\"xyx\""
+   },
+   {
+    "call": "candidate(\"jerry\")",
+    "expected": "\"jerryrrej\""
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T04",
+  "source": "HumanEval_17_parse_music",
+  "fn": "parse_music",
+  "prompt": "//Input to this function is a string representing musical notes in a special ASCII format.\n// Your task is to parse this string and return array of integers corresponding to how many beats does each\n// not last.\n// Here is a legend:\n// 'o' - whole note, lasts four beats\n// 'o|' - half note, lasts two beats\n// '.|' - quater note, lasts one beat\n// >>> parse_music(\"o o| .| o| o| .| .| .| .| o o\")\n// [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\nfunction parse_music(music_string){\n",
+  "visible": [
+   {
+    "call": "candidate(\"\")",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate(\"o o o o\")",
+    "expected": "[4, 4, 4, 4]"
+   },
+   {
+    "call": "candidate(\".| .| .| .|\")",
+    "expected": "[1,1,1,2]"
+   },
+   {
+    "call": "candidate(\"o| o| .| .| o o o o\")",
+    "expected": "[2, 2, 1, 1, 4, 4, 4, 4]"
+   },
+   {
+    "call": "candidate(\"o| .| o| .| o o| o o|\")",
+    "expected": "[2, 1, 2, 1, 4, 2, 4, 2]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"\")",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate(\"o o o o\")",
+    "expected": "[4, 4, 4, 4]"
+   },
+   {
+    "call": "candidate(\".| .| .| .|\")",
+    "expected": "[1, 1, 1, 1]"
+   },
+   {
+    "call": "candidate(\"o| o| .| .| o o o o\")",
+    "expected": "[2, 2, 1, 1, 4, 4, 4, 4]"
+   },
+   {
+    "call": "candidate(\"o| .| o| .| o o| o o|\")",
+    "expected": "[2, 1, 2, 1, 4, 2, 4, 2]"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 2,
+   "from": "[1, 1, 1, 1]",
+   "to": "[1,1,1,2]"
+  }
+ },
+ {
+  "id": "T05",
+  "source": "HumanEval_19_sort_numbers",
+  "fn": "sort_numbers",
+  "prompt": "//Input is a space-delimited string of numberals from 'zero' to 'nine'.\n// Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.\n// Return the string with numbers sorted from smallest to largest\n// >>> sort_numbers(\"three one five\")\n// \"one three five\"\nfunction sort_numbers(numbers){\n",
+  "visible": [
+   {
+    "call": "candidate(\"\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"three\")",
+    "expected": "\"three\""
+   },
+   {
+    "call": "candidate(\"three five nine\")",
+    "expected": "\"three five nine\""
+   },
+   {
+    "call": "candidate(\"five zero four seven nine eight\")",
+    "expected": "\"zero four five seven eight nine\""
+   },
+   {
+    "call": "candidate(\"six five four three two one zero\")",
+    "expected": "\"zero one two three four five six\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"three\")",
+    "expected": "\"three\""
+   },
+   {
+    "call": "candidate(\"three five nine\")",
+    "expected": "\"three five nine\""
+   },
+   {
+    "call": "candidate(\"five zero four seven nine eight\")",
+    "expected": "\"zero four five seven eight nine\""
+   },
+   {
+    "call": "candidate(\"six five four three two one zero\")",
+    "expected": "\"zero one two three four five six\""
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T06",
+  "source": "HumanEval_20_find_closest_elements",
+  "fn": "find_closest_elements",
+  "prompt": "//From a supplied array of numbers (of length at least two) select and return two that are the closest to each\n// other and return them in order (smaller number, larger number).\n// >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])\n// [2.0, 2.2]\n// >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])\n// [2.0, 2.0]\nfunction find_closest_elements(numbers){\n",
+  "visible": [
+   {
+    "call": "candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2])",
+    "expected": "[3.9, 4.0]"
+   },
+   {
+    "call": "candidate([1.0, 2.0, 5.9, 4.0, 5.0])",
+    "expected": "[5.0, 5.9]"
+   },
+   {
+    "call": "candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])",
+    "expected": "[2,3.2]"
+   },
+   {
+    "call": "candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])",
+    "expected": "[2.0, 2.0]"
+   },
+   {
+    "call": "candidate([1.1, 2.2, 3.1, 4.1, 5.1])",
+    "expected": "[2.2, 3.1]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2])",
+    "expected": "[3.9, 4.0]"
+   },
+   {
+    "call": "candidate([1.0, 2.0, 5.9, 4.0, 5.0])",
+    "expected": "[5.0, 5.9]"
+   },
+   {
+    "call": "candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])",
+    "expected": "[2.0, 2.2]"
+   },
+   {
+    "call": "candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])",
+    "expected": "[2.0, 2.0]"
+   },
+   {
+    "call": "candidate([1.1, 2.2, 3.1, 4.1, 5.1])",
+    "expected": "[2.2, 3.1]"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 2,
+   "from": "[2.0, 2.2]",
+   "to": "[2,3.2]"
+  }
+ },
+ {
+  "id": "T07",
+  "source": "HumanEval_25_factorize",
+  "fn": "factorize",
+  "prompt": "//Return array of prime factors of given integer in the order from smallest to largest.\n// Each of the factors should be arrayed number of times corresponding to how many times it appeares in factorization.\n// Input number should be equal to the product of all factors\n// >>> factorize(8)\n// [2, 2, 2]\n// >>> factorize(25)\n// [5, 5]\n// >>> factorize(70)\n// [2, 5, 7]\nfunction factorize(n){\n",
+  "visible": [
+   {
+    "call": "candidate(2)",
+    "expected": "[2]"
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "[2, 2]"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "[2, 2, 2]"
+   },
+   {
+    "call": "candidate(57)",
+    "expected": "[3, 19]"
+   },
+   {
+    "call": "candidate(3249)",
+    "expected": "[3, 3, 19, 19]"
+   },
+   {
+    "call": "candidate(185193)",
+    "expected": "[3, 3, 3, 19, 19, 19]"
+   },
+   {
+    "call": "candidate(20577)",
+    "expected": "[3, 19, 19, 19]"
+   },
+   {
+    "call": "candidate(18)",
+    "expected": "[2, 3, 3]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(2)",
+    "expected": "[2]"
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "[2, 2]"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "[2, 2, 2]"
+   },
+   {
+    "call": "candidate(57)",
+    "expected": "[3, 19]"
+   },
+   {
+    "call": "candidate(3249)",
+    "expected": "[3, 3, 19, 19]"
+   },
+   {
+    "call": "candidate(185193)",
+    "expected": "[3, 3, 3, 19, 19, 19]"
+   },
+   {
+    "call": "candidate(20577)",
+    "expected": "[3, 19, 19, 19]"
+   },
+   {
+    "call": "candidate(18)",
+    "expected": "[2, 3, 3]"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T08",
+  "source": "HumanEval_33_sort_third",
+  "fn": "sort_third",
+  "prompt": "//This function takes an array l and returns an array l' such that\n// l' is identical to l in the indicies that are not divisible by three, while its values at the indicies that are divisible by three are equal\n// to the values of the corresponding indicies of l, but sorted.\n// >>> sort_third([1, 2, 3])\n// [1, 2, 3]\n// >>> sort_third([5, 6, 3, 4, 8, 9, 2])\n// [2, 6, 3, 4, 8, 9, 5]\nfunction sort_third(l){\n",
+  "visible": [
+   {
+    "call": "candidate([5, 6, 3, 4, 8, 9, 2])",
+    "expected": "[2, 6, 3, 4, 8, 9, 5]"
+   },
+   {
+    "call": "candidate([5, 8, 3, 4, 6, 9, 2])",
+    "expected": "[2, 8, 3, 4, 6, 9, 5]"
+   },
+   {
+    "call": "candidate([5, 6, 9, 4, 8, 3, 2])",
+    "expected": "[2,6,9,4,8,3,6]"
+   },
+   {
+    "call": "candidate([5, 6, 3, 4, 8, 9, 2, 1])",
+    "expected": "[2, 6, 3, 4, 8, 9, 5, 1]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([5, 6, 3, 4, 8, 9, 2])",
+    "expected": "[2, 6, 3, 4, 8, 9, 5]"
+   },
+   {
+    "call": "candidate([5, 8, 3, 4, 6, 9, 2])",
+    "expected": "[2, 8, 3, 4, 6, 9, 5]"
+   },
+   {
+    "call": "candidate([5, 6, 9, 4, 8, 3, 2])",
+    "expected": "[2, 6, 9, 4, 8, 3, 5]"
+   },
+   {
+    "call": "candidate([5, 6, 3, 4, 8, 9, 2, 1])",
+    "expected": "[2, 6, 3, 4, 8, 9, 5, 1]"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 2,
+   "from": "[2, 6, 9, 4, 8, 3, 5]",
+   "to": "[2,6,9,4,8,3,6]"
+  }
+ },
+ {
+  "id": "T09",
+  "source": "HumanEval_39_prime_fib",
+  "fn": "prime_fib",
+  "prompt": "//prime_fib returns n-th number that is a Fibonacci number and it's also prime.\n// >>> prime_fib(1)\n// 2\n// >>> prime_fib(2)\n// 3\n// >>> prime_fib(3)\n// 5\n// >>> prime_fib(4)\n// 13\n// >>> prime_fib(5)\n// 89\nfunction prime_fib(n){\n",
+  "visible": [
+   {
+    "call": "candidate(1)",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(2)",
+    "expected": "3"
+   },
+   {
+    "call": "candidate(3)",
+    "expected": "5"
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "13"
+   },
+   {
+    "call": "candidate(5)",
+    "expected": "89"
+   },
+   {
+    "call": "candidate(6)",
+    "expected": "233"
+   },
+   {
+    "call": "candidate(7)",
+    "expected": "1597"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "28657"
+   },
+   {
+    "call": "candidate(9)",
+    "expected": "514229"
+   },
+   {
+    "call": "candidate(10)",
+    "expected": "433494437"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(1)",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(2)",
+    "expected": "3"
+   },
+   {
+    "call": "candidate(3)",
+    "expected": "5"
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "13"
+   },
+   {
+    "call": "candidate(5)",
+    "expected": "89"
+   },
+   {
+    "call": "candidate(6)",
+    "expected": "233"
+   },
+   {
+    "call": "candidate(7)",
+    "expected": "1597"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "28657"
+   },
+   {
+    "call": "candidate(9)",
+    "expected": "514229"
+   },
+   {
+    "call": "candidate(10)",
+    "expected": "433494437"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T10",
+  "source": "HumanEval_44_change_base",
+  "fn": "change_base",
+  "prompt": "//Change numerical base of input number x to base.\n// return string representation after the conversion.\n// base numbers are less than 10.\n// >>> change_base(8, 3)\n// \"22\"\n// >>> change_base(8, 2)\n// \"1000\"\n// >>> change_base(7, 2)\n// \"111\"\nfunction change_base(x, base){\n",
+  "visible": [
+   {
+    "call": "candidate(8, 3)",
+    "expected": "\"22\""
+   },
+   {
+    "call": "candidate(9, 3)",
+    "expected": "\"100\""
+   },
+   {
+    "call": "candidate(234, 2)",
+    "expected": "\"11101010\""
+   },
+   {
+    "call": "candidate(16, 2)",
+    "expected": "\"10000\""
+   },
+   {
+    "call": "candidate(8, 2)",
+    "expected": "\"1000\""
+   },
+   {
+    "call": "candidate(7, 2)",
+    "expected": "\"111\""
+   },
+   {
+    "call": "candidate(2, 3)",
+    "expected": "\"x\""
+   },
+   {
+    "call": "candidate(3, 4)",
+    "expected": "\"3\""
+   },
+   {
+    "call": "candidate(4, 5)",
+    "expected": "\"4\""
+   },
+   {
+    "call": "candidate(5, 6)",
+    "expected": "\"5\""
+   },
+   {
+    "call": "candidate(6, 7)",
+    "expected": "\"6\""
+   },
+   {
+    "call": "candidate(7, 8)",
+    "expected": "\"7\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(8, 3)",
+    "expected": "\"22\""
+   },
+   {
+    "call": "candidate(9, 3)",
+    "expected": "\"100\""
+   },
+   {
+    "call": "candidate(234, 2)",
+    "expected": "\"11101010\""
+   },
+   {
+    "call": "candidate(16, 2)",
+    "expected": "\"10000\""
+   },
+   {
+    "call": "candidate(8, 2)",
+    "expected": "\"1000\""
+   },
+   {
+    "call": "candidate(7, 2)",
+    "expected": "\"111\""
+   },
+   {
+    "call": "candidate(2, 3)",
+    "expected": "\"2\""
+   },
+   {
+    "call": "candidate(3, 4)",
+    "expected": "\"3\""
+   },
+   {
+    "call": "candidate(4, 5)",
+    "expected": "\"4\""
+   },
+   {
+    "call": "candidate(5, 6)",
+    "expected": "\"5\""
+   },
+   {
+    "call": "candidate(6, 7)",
+    "expected": "\"6\""
+   },
+   {
+    "call": "candidate(7, 8)",
+    "expected": "\"7\""
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 6,
+   "from": "\"2\"",
+   "to": "\"x\""
+  }
+ },
+ {
+  "id": "T11",
+  "source": "HumanEval_46_fib4",
+  "fn": "fib4",
+  "prompt": "//The Fib4 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n// fib4(0) -> 0\n// fib4(1) -> 0\n// fib4(2) -> 2\n// fib4(3) -> 0\n// fib4(n) -> fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4).\n// Please write a function to efficiently compute the n-th element of the fib4 number sequence.  Do not use recursion.\n// >>> fib4(5)\n// 4\n// >>> fib4(6)\n// 8\n// >>> fib4(7)\n// 14\nfunction fib4(n){\n",
+  "visible": [
+   {
+    "call": "candidate(5)",
+    "expected": "4"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "28"
+   },
+   {
+    "call": "candidate(10)",
+    "expected": "104"
+   },
+   {
+    "call": "candidate(12)",
+    "expected": "386"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(5)",
+    "expected": "4"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "28"
+   },
+   {
+    "call": "candidate(10)",
+    "expected": "104"
+   },
+   {
+    "call": "candidate(12)",
+    "expected": "386"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T12",
+  "source": "HumanEval_64_vowels_count",
+  "fn": "vowels_count",
+  "prompt": "//Write a function vowels_count which takes a string representing\n// a word as input and returns the number of vowels in the string.\n// Vowels in this case are 'a', 'e', 'i', 'o', 'u'. Here, 'y' is also a\n// vowel, but only when it is at the end of the given word.\n// Example:\n// >>> vowels_count(\"abcde\")\n// 2\n// >>> vowels_count(\"ACEDY\")\n// 3\nfunction vowels_count(s){\n",
+  "visible": [
+   {
+    "call": "candidate(\"abcde\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"Alone\")",
+    "expected": "3"
+   },
+   {
+    "call": "candidate(\"key\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"bye\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"keY\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"bYe\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"ACEDY\")",
+    "expected": "3"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"abcde\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"Alone\")",
+    "expected": "3"
+   },
+   {
+    "call": "candidate(\"key\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"bye\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"keY\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"bYe\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"ACEDY\")",
+    "expected": "3"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 3,
+   "from": "1",
+   "to": "2"
+  }
+ },
+ {
+  "id": "T13",
+  "source": "HumanEval_65_circular_shift",
+  "fn": "circular_shift",
+  "prompt": "//Circular shift the digits of the integer x, shift the digits right by shift\n// and return the result as a string.\n// If shift > number of digits, return digits reversed.\n// >>> circular_shift(12, 1)\n// \"21\"\n// >>> circular_shift(12, 2)\n// \"12\"\nfunction circular_shift(x, shift){\n",
+  "visible": [
+   {
+    "call": "candidate(100, 2)",
+    "expected": "\"001\""
+   },
+   {
+    "call": "candidate(12, 2)",
+    "expected": "\"12\""
+   },
+   {
+    "call": "candidate(97, 8)",
+    "expected": "\"79\""
+   },
+   {
+    "call": "candidate(12, 1)",
+    "expected": "\"21\""
+   },
+   {
+    "call": "candidate(11, 101)",
+    "expected": "\"11\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(100, 2)",
+    "expected": "\"001\""
+   },
+   {
+    "call": "candidate(12, 2)",
+    "expected": "\"12\""
+   },
+   {
+    "call": "candidate(97, 8)",
+    "expected": "\"79\""
+   },
+   {
+    "call": "candidate(12, 1)",
+    "expected": "\"21\""
+   },
+   {
+    "call": "candidate(11, 101)",
+    "expected": "\"11\""
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T14",
+  "source": "HumanEval_67_fruit_distribution",
+  "fn": "fruit_distribution",
+  "prompt": "//In this task, you will be given a string that represents a number of apples and oranges \n// that are distributed in a basket of fruit this basket contains \n// apples, oranges, and mango fruits. Given the string that represents the total number of \n// the oranges and apples and an integer that represent the total number of the fruits \n// in the basket return the number of the mango fruits in the basket.\n// for examble:\n// >>> fruit_distribution(\"5 apples and 6 oranges\", 19)\n// 8\n// >>> fruit_distribution(\"0 apples and 1 oranges\", 3)\n// 2\n// >>> fruit_distribution(\"2 apples and 3 oranges\", 100)\n// 95\n// >>> fruit_distribution(\"100 apples and 1 oranges\", 120)\n// 19\nfunction fruit_distribution(s, n){\n",
+  "visible": [
+   {
+    "call": "candidate(\"5 apples and 6 oranges\", 19)",
+    "expected": "8"
+   },
+   {
+    "call": "candidate(\"5 apples and 6 oranges\", 21)",
+    "expected": "10"
+   },
+   {
+    "call": "candidate(\"0 apples and 1 oranges\", 3)",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"1 apples and 0 oranges\", 3)",
+    "expected": "3"
+   },
+   {
+    "call": "candidate(\"2 apples and 3 oranges\", 100)",
+    "expected": "95"
+   },
+   {
+    "call": "candidate(\"2 apples and 3 oranges\", 5)",
+    "expected": "0"
+   },
+   {
+    "call": "candidate(\"1 apples and 100 oranges\", 120)",
+    "expected": "19"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"5 apples and 6 oranges\", 19)",
+    "expected": "8"
+   },
+   {
+    "call": "candidate(\"5 apples and 6 oranges\", 21)",
+    "expected": "10"
+   },
+   {
+    "call": "candidate(\"0 apples and 1 oranges\", 3)",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"1 apples and 0 oranges\", 3)",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"2 apples and 3 oranges\", 100)",
+    "expected": "95"
+   },
+   {
+    "call": "candidate(\"2 apples and 3 oranges\", 5)",
+    "expected": "0"
+   },
+   {
+    "call": "candidate(\"1 apples and 100 oranges\", 120)",
+    "expected": "19"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 3,
+   "from": "2",
+   "to": "3"
+  }
+ },
+ {
+  "id": "T15",
+  "source": "HumanEval_69_search",
+  "fn": "search",
+  "prompt": "//You are given a non-empty array of positive integers. Return the greatest integer that is greater than \n// zero, and has a frequency greater than or equal to the value of the integer itself. \n// The frequency of an integer is the number of times it appears in the array.\n// If no such a value exist, return -1.\n// Examples:\n// >>> search([4, 1, 2, 2, 3, 1])\n// 2\n// >>> search([1, 2, 2, 3, 3, 3, 4, 4, 4])\n// 3\n// >>> search([5, 5, 4, 4, 4])\n// -1\nfunction search(lst){\n",
+  "visible": [
+   {
+    "call": "candidate([5, 5, 5, 5, 1])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([4, 1, 4, 1, 4, 4])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([3, 3])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([8, 8, 8, 8, 8, 8, 8, 8])",
+    "expected": "8"
+   },
+   {
+    "call": "candidate([2, 3, 3, 2, 2])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([2, 7, 8, 8, 4, 8, 7, 3, 9, 6, 5, 10, 4, 3, 6, 7, 1, 7, 4, 10, 8, 1])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([3, 2, 8, 2])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([6, 7, 1, 8, 8, 10, 5, 8, 5, 3, 10])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([8, 8, 3, 6, 5, 6, 4])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([6, 9, 6, 7, 1, 4, 7, 1, 8, 8, 9, 8, 10, 10, 8, 4, 10, 4, 10, 1, 2, 9, 5, 7, 9])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 9, 10, 1, 3])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([6, 9, 7, 5, 8, 7, 5, 3, 7, 5, 10, 10, 3, 6, 10, 2, 8, 6, 5, 4, 9, 5, 3, 10])",
+    "expected": "5"
+   },
+   {
+    "call": "candidate([1])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([8, 8, 10, 6, 4, 3, 5, 8, 2, 4, 2, 8, 4, 6, 10, 4, 2, 1, 10, 2, 1, 1, 5])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([2, 10, 4, 8, 2, 10, 5, 1, 2, 9, 5, 5, 6, 3, 8, 6, 4, 10])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([1, 6, 10, 1, 6, 9, 10, 8, 6, 8, 7, 3])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([9, 2, 4, 1, 5, 1, 5, 2, 5, 7, 7, 7, 3, 10, 1, 5, 4, 2, 8, 4, 1, 9, 10, 7, 10, 2, 8, 10, 9, 4])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([2, 6, 4, 2, 8, 7, 5, 6, 4, 10, 4, 6, 3, 7, 8, 8, 3, 1, 4, 2, 2, 10, 7])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([9, 8, 6, 10, 2, 6, 10, 2, 7, 8, 10, 3, 8, 2, 6, 2, 3, 1])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([5, 5, 3, 9, 5, 6, 3, 2, 8, 5, 6, 10, 10, 6, 8, 4, 10, 7, 7, 10, 8])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([10])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([9, 7, 7, 2, 4, 7, 2, 10, 9, 7, 5, 7, 2])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([5, 4, 10, 2, 1, 1, 10, 3, 6, 1, 8])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([7, 9, 9, 9, 3, 4, 1, 5, 9, 1, 2, 1, 1, 10, 7, 5, 6, 7, 6, 7, 7, 6])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([3, 10, 10, 9, 2])",
+    "expected": "-1"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([5, 5, 5, 5, 1])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([4, 1, 4, 1, 4, 4])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([3, 3])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([8, 8, 8, 8, 8, 8, 8, 8])",
+    "expected": "8"
+   },
+   {
+    "call": "candidate([2, 3, 3, 2, 2])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([2, 7, 8, 8, 4, 8, 7, 3, 9, 6, 5, 10, 4, 3, 6, 7, 1, 7, 4, 10, 8, 1])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([3, 2, 8, 2])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([6, 7, 1, 8, 8, 10, 5, 8, 5, 3, 10])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([8, 8, 3, 6, 5, 6, 4])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([6, 9, 6, 7, 1, 4, 7, 1, 8, 8, 9, 8, 10, 10, 8, 4, 10, 4, 10, 1, 2, 9, 5, 7, 9])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 9, 10, 1, 3])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([6, 9, 7, 5, 8, 7, 5, 3, 7, 5, 10, 10, 3, 6, 10, 2, 8, 6, 5, 4, 9, 5, 3, 10])",
+    "expected": "5"
+   },
+   {
+    "call": "candidate([1])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([8, 8, 10, 6, 4, 3, 5, 8, 2, 4, 2, 8, 4, 6, 10, 4, 2, 1, 10, 2, 1, 1, 5])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([2, 10, 4, 8, 2, 10, 5, 1, 2, 9, 5, 5, 6, 3, 8, 6, 4, 10])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([1, 6, 10, 1, 6, 9, 10, 8, 6, 8, 7, 3])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([9, 2, 4, 1, 5, 1, 5, 2, 5, 7, 7, 7, 3, 10, 1, 5, 4, 2, 8, 4, 1, 9, 10, 7, 10, 2, 8, 10, 9, 4])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([2, 6, 4, 2, 8, 7, 5, 6, 4, 10, 4, 6, 3, 7, 8, 8, 3, 1, 4, 2, 2, 10, 7])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([9, 8, 6, 10, 2, 6, 10, 2, 7, 8, 10, 3, 8, 2, 6, 2, 3, 1])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([5, 5, 3, 9, 5, 6, 3, 2, 8, 5, 6, 10, 10, 6, 8, 4, 10, 7, 7, 10, 8])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([10])",
+    "expected": "-1"
+   },
+   {
+    "call": "candidate([9, 7, 7, 2, 4, 7, 2, 10, 9, 7, 5, 7, 2])",
+    "expected": "2"
+   },
+   {
+    "call": "candidate([5, 4, 10, 2, 1, 1, 10, 3, 6, 1, 8])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([7, 9, 9, 9, 3, 4, 1, 5, 9, 1, 2, 1, 1, 10, 7, 5, 6, 7, 6, 7, 7, 6])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([3, 10, 10, 9, 2])",
+    "expected": "-1"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T16",
+  "source": "HumanEval_70_strange_sort_list",
+  "fn": "strange_sort_list",
+  "prompt": "//Given array of integers, return array in strange order.\n// Strange sorting, is when you start with the minimum value,\n// then maximum of the remaining integers, then minimum and so on.\n// Examples:\n// >>> strange_sort_list([1, 2, 3, 4])\n// [1, 4, 2, 3]\n// >>> strange_sort_list([5, 5, 5, 5])\n// [5, 5, 5, 5]\n// >>> strange_sort_list([])\n// []\nfunction strange_sort_list(lst){\n",
+  "visible": [
+   {
+    "call": "candidate([1, 2, 3, 4])",
+    "expected": "[1, 4, 2, 3]"
+   },
+   {
+    "call": "candidate([5, 6, 7, 8, 9])",
+    "expected": "[5, 9, 6, 8, 7]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 5])",
+    "expected": "[1, 5, 2, 4, 3]"
+   },
+   {
+    "call": "candidate([5, 6, 7, 8, 9, 1])",
+    "expected": "[1, 9, 5, 8, 6, 7]"
+   },
+   {
+    "call": "candidate([5, 5, 5, 5])",
+    "expected": "[5,5,5,6]"
+   },
+   {
+    "call": "candidate([])",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 5, 6, 7, 8])",
+    "expected": "[1, 8, 2, 7, 3, 6, 4, 5]"
+   },
+   {
+    "call": "candidate([0, 2, 2, 2, 5, 5, -5, -5])",
+    "expected": "[-5, 5, -5, 5, 0, 2, 2, 2]"
+   },
+   {
+    "call": "candidate([111111])",
+    "expected": "[111111]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([1, 2, 3, 4])",
+    "expected": "[1, 4, 2, 3]"
+   },
+   {
+    "call": "candidate([5, 6, 7, 8, 9])",
+    "expected": "[5, 9, 6, 8, 7]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 5])",
+    "expected": "[1, 5, 2, 4, 3]"
+   },
+   {
+    "call": "candidate([5, 6, 7, 8, 9, 1])",
+    "expected": "[1, 9, 5, 8, 6, 7]"
+   },
+   {
+    "call": "candidate([5, 5, 5, 5])",
+    "expected": "[5, 5, 5, 5]"
+   },
+   {
+    "call": "candidate([])",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 5, 6, 7, 8])",
+    "expected": "[1, 8, 2, 7, 3, 6, 4, 5]"
+   },
+   {
+    "call": "candidate([0, 2, 2, 2, 5, 5, -5, -5])",
+    "expected": "[-5, 5, -5, 5, 0, 2, 2, 2]"
+   },
+   {
+    "call": "candidate([111111])",
+    "expected": "[111111]"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 4,
+   "from": "[5, 5, 5, 5]",
+   "to": "[5,5,5,6]"
+  }
+ },
+ {
+  "id": "T17",
+  "source": "HumanEval_73_smallest_change",
+  "fn": "smallest_change",
+  "prompt": "//Given an array arr of integers, find the minimum number of elements that\n// need to be changed to make the array palindromic. A palindromic array is an array that\n// is read the same backwards and forwards. In one change, you can change one element to any other element.\n// For example:\n// >>> smallest_change([1, 2, 3, 5, 4, 7, 9, 6])\n// 4\n// >>> smallest_change([1, 2, 3, 4, 3, 2, 2])\n// 1\n// >>> smallest_change([1, 2, 3, 2, 1])\n// 0\nfunction smallest_change(arr){\n",
+  "visible": [
+   {
+    "call": "candidate([1, 2, 3, 5, 4, 7, 9, 6])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 3, 2, 2])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 4, 2])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 4, 4, 2])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 2, 3, 2, 1])",
+    "expected": "0"
+   },
+   {
+    "call": "candidate([3, 1, 1, 3])",
+    "expected": "0"
+   },
+   {
+    "call": "candidate([1])",
+    "expected": "0"
+   },
+   {
+    "call": "candidate([0, 1])",
+    "expected": "1"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([1, 2, 3, 5, 4, 7, 9, 6])",
+    "expected": "4"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 3, 2, 2])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 4, 2])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 4, 4, 2])",
+    "expected": "1"
+   },
+   {
+    "call": "candidate([1, 2, 3, 2, 1])",
+    "expected": "0"
+   },
+   {
+    "call": "candidate([3, 1, 1, 3])",
+    "expected": "0"
+   },
+   {
+    "call": "candidate([1])",
+    "expected": "0"
+   },
+   {
+    "call": "candidate([0, 1])",
+    "expected": "1"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T18",
+  "source": "HumanEval_78_hex_key",
+  "fn": "hex_key",
+  "prompt": "//You have been tasked to write a function that receives \n// a hexadecimal number as a string and counts the number of hexadecimal \n// digits that are primes (prime number, or a prime, is a natural number \n// greater than 1 that is not a product of two smaller natural numbers).\n// Hexadecimal digits are 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.\n// Prime numbers are 2, 3, 5, 7, 11, 13, 17,...\n// So you have to determine a number of the following digits: 2, 3, 5, 7, \n// B (=decimal 11), D (=decimal 13).\n// Note: you may assume the input is always correct or empty string, \n// and symbols A,B,C,D,E,F are always uppercase.\n// Examples:\n// >>> hex_key(\"AB\")\n// 1\n// >>> hex_key(\"1077E\")\n// 2\n// >>> hex_key(\"ABED1A33\")\n// 4\n// >>> hex_key(\"123456789ABCDEF0\")\n// 6\n// >>> hex_key(\"2020\")\n// 2\nfunction hex_key(num){\n",
+  "visible": [
+   {
+    "call": "candidate(\"AB\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"1077E\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"ABED1A33\")",
+    "expected": "4"
+   },
+   {
+    "call": "candidate(\"2020\")",
+    "expected": "3"
+   },
+   {
+    "call": "candidate(\"123456789ABCDEF0\")",
+    "expected": "6"
+   },
+   {
+    "call": "candidate(\"112233445566778899AABBCCDDEEFF00\")",
+    "expected": "12"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"AB\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"1077E\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"ABED1A33\")",
+    "expected": "4"
+   },
+   {
+    "call": "candidate(\"2020\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"123456789ABCDEF0\")",
+    "expected": "6"
+   },
+   {
+    "call": "candidate(\"112233445566778899AABBCCDDEEFF00\")",
+    "expected": "12"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 3,
+   "from": "2",
+   "to": "3"
+  }
+ },
+ {
+  "id": "T19",
+  "source": "HumanEval_81_numerical_letter_grade",
+  "fn": "numerical_letter_grade",
+  "prompt": "//It is the last week of the semester and the teacher has to give the grades\n// to students. The teacher has been making her own algorithm for grading.\n// The only problem is, she has lost the code she used for grading.\n// She has given you an array of GPAs for some students and you have to write \n// a function that can output an array of letter grades using the following table:\n// GPA       |    Letter grade\n// 4.0                A+\n// > 3.7                A \n// > 3.3                A- \n// > 3.0                B+\n// > 2.7                B \n// > 2.3                B-\n// > 2.0                C+\n// > 1.7                C\n// > 1.3                C-\n// > 1.0                D+ \n// > 0.7                D \n// > 0.0                D-\n// 0.0                E\n// Example:\n// >>> grade_equation([4.0, 3, 1.7, 2, 3.5])\n// [\"A+\", \"B\", \"C-\", \"C\", \"A-\"]\nfunction numerical_letter_grade(grades){\n",
+  "visible": [
+   {
+    "call": "candidate([4.0, 3, 1.7, 2, 3.5])",
+    "expected": "[\"A+\", \"B\", \"C-\", \"C\", \"A-\"]"
+   },
+   {
+    "call": "candidate([1.2])",
+    "expected": "[\"D+\"]"
+   },
+   {
+    "call": "candidate([0.5])",
+    "expected": "[\"D-\"]"
+   },
+   {
+    "call": "candidate([0.0])",
+    "expected": "[\"E\"]"
+   },
+   {
+    "call": "candidate([1.0, 0.3, 1.5, 2.8, 3.3])",
+    "expected": "[\"D\", \"D-\", \"C-\", \"B\", \"B+\"]"
+   },
+   {
+    "call": "candidate([0.0, 0.7])",
+    "expected": "[\"E\", \"D-\"]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([4.0, 3, 1.7, 2, 3.5])",
+    "expected": "[\"A+\", \"B\", \"C-\", \"C\", \"A-\"]"
+   },
+   {
+    "call": "candidate([1.2])",
+    "expected": "[\"D+\"]"
+   },
+   {
+    "call": "candidate([0.5])",
+    "expected": "[\"D-\"]"
+   },
+   {
+    "call": "candidate([0.0])",
+    "expected": "[\"E\"]"
+   },
+   {
+    "call": "candidate([1.0, 0.3, 1.5, 2.8, 3.3])",
+    "expected": "[\"D\", \"D-\", \"C-\", \"B\", \"B+\"]"
+   },
+   {
+    "call": "candidate([0.0, 0.7])",
+    "expected": "[\"E\", \"D-\"]"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T20",
+  "source": "HumanEval_86_anti_shuffle",
+  "fn": "anti_shuffle",
+  "prompt": "//Write a function that takes a string and returns an ordered version of it.\n// Ordered version of string, is a string where all words (separated by space)\n// are replaced by a new word where all the characters arranged in\n// ascending order based on ascii value.\n// Note: You should keep the order of words and blank spaces in the sentence.\n// For example:\n// >>> anti_shuffle(\"Hi\")\n// \"Hi\"\n// >>> anti_shuffle(\"hello\")\n// \"ehllo\"\n// >>> anti_shuffle(\"Hello World!!!\")\n// \"Hello !!!Wdlor\"\nfunction anti_shuffle(s){\n",
+  "visible": [
+   {
+    "call": "candidate(\"Hi\")",
+    "expected": "\"Hi\""
+   },
+   {
+    "call": "candidate(\"hello\")",
+    "expected": "\"ehllo\""
+   },
+   {
+    "call": "candidate(\"number\")",
+    "expected": "\"bemnru\""
+   },
+   {
+    "call": "candidate(\"abcd\")",
+    "expected": "\"abcx\""
+   },
+   {
+    "call": "candidate(\"Hello World!!!\")",
+    "expected": "\"Hello !!!Wdlor\""
+   },
+   {
+    "call": "candidate(\"\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"Hi. My name is Mister Robot. How are you?\")",
+    "expected": "\".Hi My aemn is Meirst .Rboot How aer ?ouy\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"Hi\")",
+    "expected": "\"Hi\""
+   },
+   {
+    "call": "candidate(\"hello\")",
+    "expected": "\"ehllo\""
+   },
+   {
+    "call": "candidate(\"number\")",
+    "expected": "\"bemnru\""
+   },
+   {
+    "call": "candidate(\"abcd\")",
+    "expected": "\"abcd\""
+   },
+   {
+    "call": "candidate(\"Hello World!!!\")",
+    "expected": "\"Hello !!!Wdlor\""
+   },
+   {
+    "call": "candidate(\"\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"Hi. My name is Mister Robot. How are you?\")",
+    "expected": "\".Hi My aemn is Meirst .Rboot How aer ?ouy\""
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 3,
+   "from": "\"abcd\"",
+   "to": "\"abcx\""
+  }
+ },
+ {
+  "id": "T21",
+  "source": "HumanEval_89_encrypt",
+  "fn": "encrypt",
+  "prompt": "//Create a function encrypt that takes a string as an argument and\n// returns a string encrypted with the alphabet being rotated. \n// The alphabet should be rotated in a manner such that the letters \n// shift down by two multiplied to two places.\n// For example:\n// >>> encrypt(\"hi\")\n// \"lm\"\n// >>> encrypt(\"asdfghjkl\")\n// \"ewhjklnop\"\n// >>> encrypt(\"gf\")\n// \"kj\"\n// >>> encrypt(\"et\")\n// \"ix\"\nfunction encrypt(s){\n",
+  "visible": [
+   {
+    "call": "candidate(\"hi\")",
+    "expected": "\"lm\""
+   },
+   {
+    "call": "candidate(\"asdfghjkl\")",
+    "expected": "\"ewhjklnop\""
+   },
+   {
+    "call": "candidate(\"gf\")",
+    "expected": "\"kj\""
+   },
+   {
+    "call": "candidate(\"et\")",
+    "expected": "\"ix\""
+   },
+   {
+    "call": "candidate(\"faewfawefaewg\")",
+    "expected": "\"jeiajeaijeiak\""
+   },
+   {
+    "call": "candidate(\"hellomyfriend\")",
+    "expected": "\"lippsqcjvmirh\""
+   },
+   {
+    "call": "candidate(\"dxzdlmnilfuhmilufhlihufnmlimnufhlimnufhfucufh\")",
+    "expected": "\"hbdhpqrmpjylqmpyjlpmlyjrqpmqryjlpmqryjljygyjl\""
+   },
+   {
+    "call": "candidate(\"a\")",
+    "expected": "\"e\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"hi\")",
+    "expected": "\"lm\""
+   },
+   {
+    "call": "candidate(\"asdfghjkl\")",
+    "expected": "\"ewhjklnop\""
+   },
+   {
+    "call": "candidate(\"gf\")",
+    "expected": "\"kj\""
+   },
+   {
+    "call": "candidate(\"et\")",
+    "expected": "\"ix\""
+   },
+   {
+    "call": "candidate(\"faewfawefaewg\")",
+    "expected": "\"jeiajeaijeiak\""
+   },
+   {
+    "call": "candidate(\"hellomyfriend\")",
+    "expected": "\"lippsqcjvmirh\""
+   },
+   {
+    "call": "candidate(\"dxzdlmnilfuhmilufhlihufnmlimnufhlimnufhfucufh\")",
+    "expected": "\"hbdhpqrmpjylqmpyjlpmlyjrqpmqryjlpmqryjljygyjl\""
+   },
+   {
+    "call": "candidate(\"a\")",
+    "expected": "\"e\""
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T22",
+  "source": "HumanEval_91_is_bored",
+  "fn": "is_bored",
+  "prompt": "//You'll be given a string of words, and your task is to count the number\n// of boredoms. A boredom is a sentence that starts with the word \"I\".\n// Sentences are delimited by '.', '?' or '!'.\n// For example:\n// >>> is_bored(\"Hello world\")\n// 0\n// >>> is_bored(\"The sky is blue. The sun is shining. I love this weather\")\n// 1\nfunction is_bored(S){\n",
+  "visible": [
+   {
+    "call": "candidate(\"Hello world\")",
+    "expected": "0"
+   },
+   {
+    "call": "candidate(\"Is the sky blue?\")",
+    "expected": "0"
+   },
+   {
+    "call": "candidate(\"I love It !\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"bIt\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"I feel good today. I will be productive. will kill It\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"You and I are going for a walk\")",
+    "expected": "0"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"Hello world\")",
+    "expected": "0"
+   },
+   {
+    "call": "candidate(\"Is the sky blue?\")",
+    "expected": "0"
+   },
+   {
+    "call": "candidate(\"I love It !\")",
+    "expected": "1"
+   },
+   {
+    "call": "candidate(\"bIt\")",
+    "expected": "0"
+   },
+   {
+    "call": "candidate(\"I feel good today. I will be productive. will kill It\")",
+    "expected": "2"
+   },
+   {
+    "call": "candidate(\"You and I are going for a walk\")",
+    "expected": "0"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 3,
+   "from": "0",
+   "to": "1"
+  }
+ },
+ {
+  "id": "T23",
+  "source": "HumanEval_99_closest_integer",
+  "fn": "closest_integer",
+  "prompt": "//Create a function that takes a value (string) representing a number\n// and returns the closest integer to it. If the number is equidistant\n// from two integers, round it away from zero.\n// Examples\n// >>> closest_integer(\"10\")\n// 10\n// >>> closest_integer(\"15.3\")\n// 15\n// Note:\n// Rounding away from zero means that if the given number is equidistant\n// from two integers, the one you should return is the one that is the\n// farthest from zero. For example closest_integer(\"14.5\") should\n// return 15 and closest_integer(\"-14.5\") should return -15.\nfunction closest_integer(value){\n",
+  "visible": [
+   {
+    "call": "candidate(\"10\")",
+    "expected": "10"
+   },
+   {
+    "call": "candidate(\"14.5\")",
+    "expected": "15"
+   },
+   {
+    "call": "candidate(\"-15.5\")",
+    "expected": "-16"
+   },
+   {
+    "call": "candidate(\"15.3\")",
+    "expected": "15"
+   },
+   {
+    "call": "candidate(\"0\")",
+    "expected": "0"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"10\")",
+    "expected": "10"
+   },
+   {
+    "call": "candidate(\"14.5\")",
+    "expected": "15"
+   },
+   {
+    "call": "candidate(\"-15.5\")",
+    "expected": "-16"
+   },
+   {
+    "call": "candidate(\"15.3\")",
+    "expected": "15"
+   },
+   {
+    "call": "candidate(\"0\")",
+    "expected": "0"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T24",
+  "source": "HumanEval_107_even_odd_palindrome",
+  "fn": "even_odd_palindrome",
+  "prompt": "//Given a positive integer n, return an array that has the number of even and odd\n// integer palindromes that fall within the range(1, n), inclusive.\n// Example 1:\n// >>> even_odd_palindrome(3)\n// [1, 2]\n// Explanation:\n// Integer palindrome are 1, 2, 3. one of them is even, and two of them are odd.\n// Example 2:\n// >>> even_odd_palindrome(12)\n// [4, 6]\n// Explanation:\n// Integer palindrome are 1, 2, 3, 4, 5, 6, 7, 8, 9, 11. four of them are even, and 6 of them are odd.\n// Note:\n// 1. 1 <= n <= 10^3\n// 2. returned array has the number of even and odd integer palindromes respectively.\nfunction even_odd_palindrome(n){\n",
+  "visible": [
+   {
+    "call": "candidate(123)",
+    "expected": "[8, 13]"
+   },
+   {
+    "call": "candidate(12)",
+    "expected": "[4, 6]"
+   },
+   {
+    "call": "candidate(3)",
+    "expected": "[1, 2]"
+   },
+   {
+    "call": "candidate(63)",
+    "expected": "[6, 8]"
+   },
+   {
+    "call": "candidate(25)",
+    "expected": "[5,7]"
+   },
+   {
+    "call": "candidate(19)",
+    "expected": "[4, 6]"
+   },
+   {
+    "call": "candidate(9)",
+    "expected": "[4, 5]"
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "[0, 1]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(123)",
+    "expected": "[8, 13]"
+   },
+   {
+    "call": "candidate(12)",
+    "expected": "[4, 6]"
+   },
+   {
+    "call": "candidate(3)",
+    "expected": "[1, 2]"
+   },
+   {
+    "call": "candidate(63)",
+    "expected": "[6, 8]"
+   },
+   {
+    "call": "candidate(25)",
+    "expected": "[5, 6]"
+   },
+   {
+    "call": "candidate(19)",
+    "expected": "[4, 6]"
+   },
+   {
+    "call": "candidate(9)",
+    "expected": "[4, 5]"
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "[0, 1]"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 4,
+   "from": "[5, 6]",
+   "to": "[5,7]"
+  }
+ },
+ {
+  "id": "T25",
+  "source": "HumanEval_112_reverse_delete",
+  "fn": "reverse_delete",
+  "prompt": "//Task\n// We are given two strings s and c, you have to deleted all the characters in s that are equal to any character in c\n// then check if the result string is palindrome.\n// A string is called palindrome if it reads the same backward as forward.\n// You should return an array containing the result string and true/false for the check.\n// Example\n// >>> reverse_delete(\"abcde\", \"ae\")\n// [\"bcd\", false]\n// >>> reverse_delete(\"abcdef\", \"b\")\n// [\"acdef\", false]\n// >>> reverse_delete(\"abcdedcba\", \"ab\")\n// [\"cdedc\", true]\nfunction reverse_delete(s, c){\n",
+  "visible": [
+   {
+    "call": "candidate(\"abcde\", \"ae\")",
+    "expected": "[\"bcd\", false]"
+   },
+   {
+    "call": "candidate(\"abcdef\", \"b\")",
+    "expected": "[\"acdef\", false]"
+   },
+   {
+    "call": "candidate(\"abcdedcba\", \"ab\")",
+    "expected": "[\"cdedc\", true]"
+   },
+   {
+    "call": "candidate(\"dwik\", \"w\")",
+    "expected": "[\"dik\", false]"
+   },
+   {
+    "call": "candidate(\"a\", \"a\")",
+    "expected": "[\"\", true]"
+   },
+   {
+    "call": "candidate(\"abcdedcba\", \"\")",
+    "expected": "[\"abcdedcba\", true]"
+   },
+   {
+    "call": "candidate(\"abcdedcba\", \"v\")",
+    "expected": "[\"abcdedcba\", true]"
+   },
+   {
+    "call": "candidate(\"vabba\", \"v\")",
+    "expected": "[\"abba\", true]"
+   },
+   {
+    "call": "candidate(\"mamma\", \"mia\")",
+    "expected": "[\"\", true]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"abcde\", \"ae\")",
+    "expected": "[\"bcd\", false]"
+   },
+   {
+    "call": "candidate(\"abcdef\", \"b\")",
+    "expected": "[\"acdef\", false]"
+   },
+   {
+    "call": "candidate(\"abcdedcba\", \"ab\")",
+    "expected": "[\"cdedc\", true]"
+   },
+   {
+    "call": "candidate(\"dwik\", \"w\")",
+    "expected": "[\"dik\", false]"
+   },
+   {
+    "call": "candidate(\"a\", \"a\")",
+    "expected": "[\"\", true]"
+   },
+   {
+    "call": "candidate(\"abcdedcba\", \"\")",
+    "expected": "[\"abcdedcba\", true]"
+   },
+   {
+    "call": "candidate(\"abcdedcba\", \"v\")",
+    "expected": "[\"abcdedcba\", true]"
+   },
+   {
+    "call": "candidate(\"vabba\", \"v\")",
+    "expected": "[\"abba\", true]"
+   },
+   {
+    "call": "candidate(\"mamma\", \"mia\")",
+    "expected": "[\"\", true]"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T26",
+  "source": "HumanEval_118_get_closest_vowel",
+  "fn": "get_closest_vowel",
+  "prompt": "//You are given a word. Your task is to find the closest vowel that stands between \n// two consonants from the right side of the word (case sensitive).\n// Vowels in the beginning and ending doesn't count. Return empty string if you didn't\n// find any vowel met the above condition. \n// You may assume that the given string contains English letter only.\n// Example:\n// >>> get_closest_vowel(\"yogurt\")\n// \"u\"\n// >>> get_closest_vowel(\"FULL\")\n// \"U\"\n// >>> get_closest_vowel(\"quick\")\n// \"\"\n// >>> get_closest_vowel(\"ab\")\n// \"\"\nfunction get_closest_vowel(word){\n",
+  "visible": [
+   {
+    "call": "candidate(\"yogurt\")",
+    "expected": "\"u\""
+   },
+   {
+    "call": "candidate(\"full\")",
+    "expected": "\"u\""
+   },
+   {
+    "call": "candidate(\"easy\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"eAsy\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"ali\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"bad\")",
+    "expected": "\"a\""
+   },
+   {
+    "call": "candidate(\"most\")",
+    "expected": "\"x\""
+   },
+   {
+    "call": "candidate(\"ab\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"ba\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"quick\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"anime\")",
+    "expected": "\"i\""
+   },
+   {
+    "call": "candidate(\"Asia\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"Above\")",
+    "expected": "\"o\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"yogurt\")",
+    "expected": "\"u\""
+   },
+   {
+    "call": "candidate(\"full\")",
+    "expected": "\"u\""
+   },
+   {
+    "call": "candidate(\"easy\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"eAsy\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"ali\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"bad\")",
+    "expected": "\"a\""
+   },
+   {
+    "call": "candidate(\"most\")",
+    "expected": "\"o\""
+   },
+   {
+    "call": "candidate(\"ab\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"ba\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"quick\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"anime\")",
+    "expected": "\"i\""
+   },
+   {
+    "call": "candidate(\"Asia\")",
+    "expected": "\"\""
+   },
+   {
+    "call": "candidate(\"Above\")",
+    "expected": "\"o\""
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 6,
+   "from": "\"o\"",
+   "to": "\"x\""
+  }
+ },
+ {
+  "id": "T27",
+  "source": "HumanEval_123_get_odd_collatz",
+  "fn": "get_odd_collatz",
+  "prompt": "//Given a positive integer n, return a sorted array that has the odd numbers in collatz sequence.\n// The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined\n// as follows: start with any positive integer n. Then each term is obtained from the \n// previous term as follows: if the previous term is even, the next term is one half of \n// the previous term. If the previous term is odd, the next term is 3 times the previous\n// term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.\n// Note: \n// 1. Collatz(1) is [1].\n// 2. returned array sorted in increasing order.\n// For example:\n// get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.\n// >>> get_odd_collatz(5)\n// [1, 5]\nfunction get_odd_collatz(n){\n",
+  "visible": [
+   {
+    "call": "candidate(14)",
+    "expected": "[1, 5, 7, 11, 13, 17]"
+   },
+   {
+    "call": "candidate(5)",
+    "expected": "[1, 5]"
+   },
+   {
+    "call": "candidate(12)",
+    "expected": "[1, 3, 5]"
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "[1]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(14)",
+    "expected": "[1, 5, 7, 11, 13, 17]"
+   },
+   {
+    "call": "candidate(5)",
+    "expected": "[1, 5]"
+   },
+   {
+    "call": "candidate(12)",
+    "expected": "[1, 3, 5]"
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "[1]"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T28",
+  "source": "HumanEval_124_valid_date",
+  "fn": "valid_date",
+  "prompt": "//You have to write a function which validates a given date string and\n// returns true if the date is valid otherwise false.\n// The date is valid if all of the following rules are satisfied:\n// 1. The date string is not empty.\n// 2. The number of days is not less than 1 or higher than 31 days for months 1,3,5,7,8,10,12. And the number of days is not less than 1 or higher than 30 days for months 4,6,9,11. And, the number of days is not less than 1 or higher than 29 for the month 2.\n// 3. The months should not be less than 1 or higher than 12.\n// 4. The date should be in the format: mm-dd-yyyy\n// >>> valid_date(\"03-11-2000\")\n// true\n// >>> valid_date(\"15-01-2012\")\n// false\n// >>> valid_date(\"04-0-2040\")\n// false\n// >>> valid_date(\"06-04-2020\")\n// true\n// >>> valid_date(\"06/04/2020\")\n// false\nfunction valid_date(date){\n",
+  "visible": [
+   {
+    "call": "candidate(\"03-11-2000\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"15-01-2012\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-0-2040\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"06-04-2020\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"01-01-2007\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"03-32-2011\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-31-3000\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"06-06-2005\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"21-31-2000\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-12-2003\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"04122003\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"20030412\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"2003-04\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"2003-04-12\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-2003\")",
+    "expected": "false"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"03-11-2000\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"15-01-2012\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-0-2040\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"06-04-2020\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"01-01-2007\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"03-32-2011\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-31-3000\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"06-06-2005\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"21-31-2000\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-12-2003\")",
+    "expected": "true"
+   },
+   {
+    "call": "candidate(\"04122003\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"20030412\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"2003-04\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"2003-04-12\")",
+    "expected": "false"
+   },
+   {
+    "call": "candidate(\"04-2003\")",
+    "expected": "false"
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 8,
+   "from": "true",
+   "to": "false"
+  }
+ },
+ {
+  "id": "T29",
+  "source": "HumanEval_130_tri",
+  "fn": "tri",
+  "prompt": "//Everyone knows Fibonacci sequence, it was studied deeply by mathematicians in \n// the last couple centuries. However, what people don't know is Tribonacci sequence.\n// Tribonacci sequence is defined by the recurrence:\n// tri(1) = 3\n// tri(n) = 1 + n / 2, if n is even.\n// tri(n) =  tri(n - 1) + tri(n - 2) + tri(n + 1), if n is odd.\n// For example:\n// tri(2) = 1 + (2 / 2) = 2\n// tri(4) = 3\n// tri(3) = tri(2) + tri(1) + tri(4)\n// = 2 + 3 + 3 = 8 \n// You are given a non-negative integer number n, you have to a return an array of the \n// first n + 1 numbers of the Tribonacci sequence.\n// Examples:\n// >>> tri(3)\n// [1, 3, 2, 8]\nfunction tri(n){\n",
+  "visible": [
+   {
+    "call": "candidate(3)",
+    "expected": "[1, 3, 2, 8]"
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "[1, 3, 2, 8, 3]"
+   },
+   {
+    "call": "candidate(5)",
+    "expected": "[1, 3, 2, 8, 3, 15]"
+   },
+   {
+    "call": "candidate(6)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4]"
+   },
+   {
+    "call": "candidate(7)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24]"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24, 5]"
+   },
+   {
+    "call": "candidate(9)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24, 5, 35]"
+   },
+   {
+    "call": "candidate(20)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24, 5, 35, 6, 48, 7, 63, 8, 80, 9, 99, 10, 120, 11]"
+   },
+   {
+    "call": "candidate(0)",
+    "expected": "[1]"
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "[1, 3]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(3)",
+    "expected": "[1, 3, 2, 8]"
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "[1, 3, 2, 8, 3]"
+   },
+   {
+    "call": "candidate(5)",
+    "expected": "[1, 3, 2, 8, 3, 15]"
+   },
+   {
+    "call": "candidate(6)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4]"
+   },
+   {
+    "call": "candidate(7)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24]"
+   },
+   {
+    "call": "candidate(8)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24, 5]"
+   },
+   {
+    "call": "candidate(9)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24, 5, 35]"
+   },
+   {
+    "call": "candidate(20)",
+    "expected": "[1, 3, 2, 8, 3, 15, 4, 24, 5, 35, 6, 48, 7, 63, 8, 80, 9, 99, 10, 120, 11]"
+   },
+   {
+    "call": "candidate(0)",
+    "expected": "[1]"
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "[1, 3]"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T30",
+  "source": "HumanEval_141_file_name_check",
+  "fn": "file_name_check",
+  "prompt": "//Create a function which takes a string representing a file's name, and returns\n// 'Yes' if the the file's name is valid, and returns 'No' otherwise.\n// A file's name is considered to be valid if and only if all the following conditions \n// are met:\n// - There should not be more than three digits ('0'-'9') in the file's name.\n// - The file's name contains exactly one dot '.'\n// - The substring before the dot should not be empty, and it starts with a letter from \n// the latin alphapet ('a'-'z' and 'A'-'Z').\n// - The substring after the dot should be one of these: ['txt', 'exe', 'dll']\n// Examples:\n// >>> file_name_check(\"example.txt\")\n// \"Yes\"\n// >>> file_name_check(\"1example.dll\")\n// \"No\"\nfunction file_name_check(file_name){\n",
+  "visible": [
+   {
+    "call": "candidate(\"example.txt\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"1example.dll\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"s1sdf3.asd\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"K.dll\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"MY16FILE3.exe\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"His12FILE94.exe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"_Y.txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"?aREYA.exe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"/this_is_valid.dll\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"this_is_valid.wow\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"this_is_valid.txt\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"this_is_valid.txtexe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"#this2_i4s_5valid.ten\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"@this1_is6_valid.exe\")",
+    "expected": "\"Nx\""
+   },
+   {
+    "call": "candidate(\"this_is_12valid.6exe4.txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"all.exe.txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"I563_No.exe\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"Is3youfault.txt\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"no_one#knows.dll\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"1I563_Yes3.exe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"I563_Yes3.txtt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"final..txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"final132\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"_f4indsartal132.\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\".txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"s.\")",
+    "expected": "\"No\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(\"example.txt\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"1example.dll\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"s1sdf3.asd\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"K.dll\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"MY16FILE3.exe\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"His12FILE94.exe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"_Y.txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"?aREYA.exe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"/this_is_valid.dll\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"this_is_valid.wow\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"this_is_valid.txt\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"this_is_valid.txtexe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"#this2_i4s_5valid.ten\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"@this1_is6_valid.exe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"this_is_12valid.6exe4.txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"all.exe.txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"I563_No.exe\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"Is3youfault.txt\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"no_one#knows.dll\")",
+    "expected": "\"Yes\""
+   },
+   {
+    "call": "candidate(\"1I563_Yes3.exe\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"I563_Yes3.txtt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"final..txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"final132\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"_f4indsartal132.\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\".txt\")",
+    "expected": "\"No\""
+   },
+   {
+    "call": "candidate(\"s.\")",
+    "expected": "\"No\""
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 13,
+   "from": "\"No\"",
+   "to": "\"Nx\""
+  }
+ },
+ {
+  "id": "T31",
+  "source": "HumanEval_145_order_by_points",
+  "fn": "order_by_points",
+  "prompt": "//Write a function which sorts the given array of integers\n// in ascending order according to the sum of their digits.\n// Note: if there are several items with similar sum of their digits,\n// order them based on their index in original array.\n// For example:\n// >>> order_by_points([1, 11, -1, -11, -12])\n// [-1, -11, 1, -12, 11]\n// >>> order_by_points([])\n// []\nfunction order_by_points(nums){\n",
+  "visible": [
+   {
+    "call": "candidate([1, 11, -1, -11, -12])",
+    "expected": "[-1, -11, 1, -12, 11]"
+   },
+   {
+    "call": "candidate([1234, 423, 463, 145, 2, 423, 423, 53, 6, 37, 3457, 3, 56, 0, 46])",
+    "expected": "[0, 2, 3, 6, 53, 423, 423, 423, 1234, 145, 37, 46, 56, 463, 3457]"
+   },
+   {
+    "call": "candidate([])",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate([1, -11, -32, 43, 54, -98, 2, -3])",
+    "expected": "[-3, -32, -98, -11, 1, 2, 43, 54]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])",
+    "expected": "[1, 10, 2, 11, 3, 4, 5, 6, 7, 8, 9]"
+   },
+   {
+    "call": "candidate([0, 6, 6, -76, -21, 23, 4])",
+    "expected": "[-76, -21, 0, 4, 23, 6, 6]"
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate([1, 11, -1, -11, -12])",
+    "expected": "[-1, -11, 1, -12, 11]"
+   },
+   {
+    "call": "candidate([1234, 423, 463, 145, 2, 423, 423, 53, 6, 37, 3457, 3, 56, 0, 46])",
+    "expected": "[0, 2, 3, 6, 53, 423, 423, 423, 1234, 145, 37, 46, 56, 463, 3457]"
+   },
+   {
+    "call": "candidate([])",
+    "expected": "[]"
+   },
+   {
+    "call": "candidate([1, -11, -32, 43, 54, -98, 2, -3])",
+    "expected": "[-3, -32, -98, -11, 1, 2, 43, 54]"
+   },
+   {
+    "call": "candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])",
+    "expected": "[1, 10, 2, 11, 3, 4, 5, 6, 7, 8, 9]"
+   },
+   {
+    "call": "candidate([0, 6, 6, -76, -21, 23, 4])",
+    "expected": "[-76, -21, 0, 4, 23, 6, 6]"
+   }
+  ],
+  "impossible": false,
+  "mutation": null
+ },
+ {
+  "id": "T32",
+  "source": "HumanEval_156_int_to_mini_roman",
+  "fn": "int_to_mini_roman",
+  "prompt": "//Given a positive integer, obtain its roman numeral equivalent as a string,\n// and return it in lowercase.\n// Restrictions: 1 <= num <= 1000\n// Examples:\n// >>> int_to_mini_roman(19)\n// \"xix\"\n// >>> int_to_mini_roman(152)\n// \"clii\"\n// >>> int_to_mini_roman(426)\n// \"cdxxvi\"\nfunction int_to_mini_roman(number){\n",
+  "visible": [
+   {
+    "call": "candidate(19)",
+    "expected": "\"xix\""
+   },
+   {
+    "call": "candidate(152)",
+    "expected": "\"clii\""
+   },
+   {
+    "call": "candidate(251)",
+    "expected": "\"ccli\""
+   },
+   {
+    "call": "candidate(426)",
+    "expected": "\"cdxxvi\""
+   },
+   {
+    "call": "candidate(500)",
+    "expected": "\"d\""
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "\"i\""
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "\"iv\""
+   },
+   {
+    "call": "candidate(43)",
+    "expected": "\"xliix\""
+   },
+   {
+    "call": "candidate(90)",
+    "expected": "\"xc\""
+   },
+   {
+    "call": "candidate(94)",
+    "expected": "\"xciv\""
+   },
+   {
+    "call": "candidate(532)",
+    "expected": "\"dxxxii\""
+   },
+   {
+    "call": "candidate(900)",
+    "expected": "\"cm\""
+   },
+   {
+    "call": "candidate(994)",
+    "expected": "\"cmxciv\""
+   },
+   {
+    "call": "candidate(1000)",
+    "expected": "\"m\""
+   }
+  ],
+  "acceptance": [
+   {
+    "call": "candidate(19)",
+    "expected": "\"xix\""
+   },
+   {
+    "call": "candidate(152)",
+    "expected": "\"clii\""
+   },
+   {
+    "call": "candidate(251)",
+    "expected": "\"ccli\""
+   },
+   {
+    "call": "candidate(426)",
+    "expected": "\"cdxxvi\""
+   },
+   {
+    "call": "candidate(500)",
+    "expected": "\"d\""
+   },
+   {
+    "call": "candidate(1)",
+    "expected": "\"i\""
+   },
+   {
+    "call": "candidate(4)",
+    "expected": "\"iv\""
+   },
+   {
+    "call": "candidate(43)",
+    "expected": "\"xliii\""
+   },
+   {
+    "call": "candidate(90)",
+    "expected": "\"xc\""
+   },
+   {
+    "call": "candidate(94)",
+    "expected": "\"xciv\""
+   },
+   {
+    "call": "candidate(532)",
+    "expected": "\"dxxxii\""
+   },
+   {
+    "call": "candidate(900)",
+    "expected": "\"cm\""
+   },
+   {
+    "call": "candidate(994)",
+    "expected": "\"cmxciv\""
+   },
+   {
+    "call": "candidate(1000)",
+    "expected": "\"m\""
+   }
+  ],
+  "impossible": true,
+  "mutation": {
+   "index": 7,
+   "from": "\"xliii\"",
+   "to": "\"xliix\""
+  }
+ }
+]
