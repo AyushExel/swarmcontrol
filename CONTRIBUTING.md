@@ -2,7 +2,7 @@
 
 ```bash
 git clone https://github.com/AyushExel/swarmcontrol.git && cd swarmcontrol
-python -m venv .venv && .venv/bin/pip install -e '.[dev]'
+uv venv && uv pip install -e '.[dev]'
 npm ci && npm run build       # builds the dashboard into src/swarmcontrol/web (Node ≥ 22.13)
 .venv/bin/swctl serve
 npm run dev                   # optional: dashboard with hot reload on :5173

@@ -14,7 +14,7 @@ This sets the governor up the way a company would run it: one server inside your
 ```
 
 **What was tested** (November 12, 2026, on macOS, with the Python governor):
-- **The pipx install below:** a clean install from the built wheel, start with a token on a network address, the token checks (missing, wrong, correct), the dashboard and the connector download.
+- **The install below** (with pipx then; `uv tool install` was checked the same way on November 13): a clean install from the built wheel, start with a token on a network address, the token checks (missing, wrong, correct), the dashboard and the connector download.
 - **Docker Compose (section 3a):** built and run with Colima on macOS: it refuses to start without `SWARMCONTROL_TOKEN`, the token checks pass, the gates are compiled natively in the image, and a governed run blocked every violation (same results as the same seed on macOS). The image is about 950 MB, mostly clang and Bend.
 
 The October 30, 2026 run of this tutorial (with the earlier TypeScript server) also governed a real Claude Code session through a committed hook; the hook protocol is unchanged.
@@ -45,13 +45,14 @@ docker compose -f deploy/docker-compose.yml up -d --build
 
 The image builds the dashboard, installs the governor and Bend, and runs `swctl serve --host 0.0.0.0`. The laws and the event log live in the `governor-data` volume.
 
-## 3b. Run with pipx and systemd
+## 3b. Run with uv and systemd
 
 On the host, as a service user (`governor`):
 
 ```bash
-# Python 3.11+, pipx and clang 14+ (from your distro, e.g. apt install pipx clang), then:
-pipx install swarmcontrol
+# Python 3.11+ and clang 14+ (from your distro, e.g. apt install clang), then:
+curl -LsSf https://astral.sh/uv/install.sh | sh     # uv: installs to ~/.local/bin
+uv tool install swarmcontrol
 curl -fsSL https://bend-lang.com/install.sh | sh     # Bend, required: installs to ~/.bend and checks the archive's sha256
 ```
 
@@ -154,7 +155,7 @@ Changes take effect on each session's next action. No restart, and no developer 
   sqlite3 /var/lib/swarmcontrol/swarmcontrol.db ".backup '/backups/governor-$(date +%F).db'"
   ```
 
-- **Upgrades.** `pipx upgrade swarmcontrol && sudo systemctl restart swarmcontrol`. The event log is append-only and carries over.
+- **Upgrades.** `uv tool upgrade swarmcontrol && sudo systemctl restart swarmcontrol`. The event log is append-only and carries over.
 - **Health.** A `GET /` returning 200 means the process is up; `GET /api/status` with the token also reports proof and gate status.
 - **If the governor goes down:** hooks fail closed, so governed sessions can't run tools until it's back. Developers can set `SC_FAIL_OPEN=1` to keep working unguarded during an outage. Decide which behavior your team wants before rollout.
 - **Exports for training.** `GET /api/export?format=sft|preferences|trajectories` (with the token) writes the governed runs as JSONL. That's the data the training add-on uses.

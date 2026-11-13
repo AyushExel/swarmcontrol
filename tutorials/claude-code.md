@@ -11,7 +11,7 @@ Nothing needs an API key: Claude Code uses your normal Claude login.
 
 ## What you need
 
-- **Python 3.11 or newer** and **[pipx](https://pipx.pypa.io/)** (or a virtualenv).
+- **Python 3.11 or newer** and **[uv](https://docs.astral.sh/uv/)** (or pip in a virtualenv).
 - **[Bend](https://bend-lang.com/)**: `curl -fsSL https://bend-lang.com/install.sh | sh`, then add `~/.bend/bin` to your `PATH`. The governor proves its laws and runs its gates with it. With clang installed (on macOS: `xcode-select --install`) the gates are compiled and checks are near-instant; without it they still work, more slowly.
 - **Claude Code**, installed and logged in (`claude --version`).
 - **Node.js**, only because the practice project is a small JavaScript project (`npm test`).
@@ -20,7 +20,7 @@ Nothing needs an API key: Claude Code uses your normal Claude login.
 ## 1. Start the governor
 
 ```bash
-pipx install swarmcontrol   # or, from this repository: npm ci && npm run build && pipx install .
+uv tool install swarmcontrol   # or, from this repository: npm ci && npm run build && uv tool install .
 swctl serve          # the dashboard and the API on http://localhost:8787
 ```
 

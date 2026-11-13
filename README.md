@@ -17,11 +17,11 @@
 
 ## Install
 
-Needs Python ≥ 3.11, [Bend](https://bend-lang.com/), and clang (recommended).
+Needs Python ≥ 3.11, [uv](https://docs.astral.sh/uv/), [Bend](https://bend-lang.com/), and clang (recommended).
 
 ```bash
 curl -fsSL https://bend-lang.com/install.sh | sh && export PATH="$HOME/.bend/bin:$PATH"
-pipx install swarmcontrol
+uv tool install swarmcontrol   # or: pip install swarmcontrol
 swctl serve                    # dashboard on http://localhost:8787
 ```
 
