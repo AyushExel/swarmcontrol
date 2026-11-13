@@ -2,7 +2,6 @@
 
 **The control loop for AI agent swarms:** enforce the rules, correct mistakes as they happen, and turn every correction into training data.
 
-<img width="960" height="600" alt="swarmcontrol-demo" src="https://github.com/user-attachments/assets/5be2bd02-6b22-49ab-b0c9-14f59450d4fa" />
 
 ## What it does
 
@@ -13,6 +12,8 @@
 - A live dashboard shows each agent as green, yellow (recovering) or red (needs a human).
 - "Done" has to pass the laws, so green means actually done.
 - The checks are [Bend](https://bend-lang.com/) functions with machine-proven guarantees, and they fail closed.
+  
+<img width="960" height="600" alt="swarmcontrol-demo" src="https://github.com/user-attachments/assets/5be2bd02-6b22-49ab-b0c9-14f59450d4fa" />
 
 ## Install
 
