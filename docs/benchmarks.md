@@ -1,20 +1,6 @@
-# SwarmControl: a control plane for agent swarms
+# Benchmark results
 
-*October 2026 · idea-stage prototype · every number below is recomputed from recorded event logs (linked)*
-
-**The problem.** Teams now run dozens of agents at once, and agents hand work to other agents. Rules get lost in those handoffs, agents drift from their objective, and the dashboards show green because each agent *says* it's done. Nobody reads hundreds of traces. Observability tools tell you what went wrong afterwards; they don't stop it.
-
-**What we built.** A runtime that sits between agents and their tools:
-
-1. **Laws, per agent.** Define rules in natural language or Bend. Each law is global, or scoped to a role (e.g. `implementer`, `lead`) or to specific agents. Every agent is checked only against its own laws, and needs no knowledge of the other agents, or even of its own laws.
-2. **Enforcement before execution.** Every action passes a checkpoint. The deterministic checks are small [Bend](https://bend-lang.com/) functions with machine-proven properties. A violating action is blocked, not logged after the fact.
-3. **Recovery, then escalation.** A blocked agent gets corrective feedback and a bounded number of retries. If it keeps violating, a human is asked.
-4. **Live health for the whole swarm.** Every agent is green (working), yellow (blocked, recovering) or red (a violation took effect, or it's waiting for a human). Because "done" must pass the laws, **green means actually done**.
-5. **Trajectories become training data.** Every action, block, correction and recovery is an append-only event. Exported, these become fine-tuning data for your own open model: successful runs, plus (blocked action → corrected action) preference pairs. That closes the loop (roadmap below).
-
-This document reports what happened when we put real models under it.
-
----
+What happened when real models ran under SwarmControl. Every number is recomputed from recorded event logs, and each section links its per-run report in [`benchmark/`](benchmark/).
 
 ## Results at a glance
 
@@ -107,7 +93,7 @@ Reports: [`shift-qwen`](benchmark/shift-qwen.md), [`shift-haiku`](benchmark/shif
 | Qwen 3 Coder 30B, 4 trials | **86 → 111** of 200 | **58 → 0** | 62 |
 | Claude Haiku 5.5, 2 trials | 77 → 80 of 100 | 2 → 0 | 3 |
 
-The laws block **0** of τ²'s own gold actions (verified before any model ran, `tests/tau2.test.ts`), so the governor never stops a correct action. The customer simulator is `gpt-4.1-mini`.
+The laws block **0** of τ²'s own gold actions (verified before any model ran, `pytests/test_benchmarks.py`), so the governor never stops a correct action. The customer simulator is `gpt-4.1-mini`.
 
 Reports: [`tau2-qwen-s7`](benchmark/tau2-qwen-s7.md), [`tau2-qwen-s8`](benchmark/tau2-qwen-s8.md), [`tau2-qwen-s9`](benchmark/tau2-qwen-s9.md), [`tau2-haiku-s7`](benchmark/tau2-haiku-s7.md), [`tau2-haiku-s8`](benchmark/tau2-haiku-s8.md).
 
@@ -150,21 +136,6 @@ Reports: [`suite-qwen`](benchmark/suite-qwen.md), [`suite-qwen-shared2`](benchma
 
 ---
 
-## 6. The data loop (roadmap)
-
-Every run already produces labeled trajectories. Across the real-model runs above, the event store holds roughly:
-
-| Signal | Count | Use |
-|---|---|---|
-| Successful agent runs and graded cases | ~4,900 | supervised fine-tuning examples |
-| Actions blocked by a law | ~715 | labeled "don't do this" examples, with the law that caught each |
-| Blocked → corrected recoveries | ~268 | ready-made preference pairs (rejected = the blocked action, chosen = the corrected one) |
-| Violations that executed in baselines | ~680 | labeled failures |
-
-The export is built (`/api/export`: full traces, SFT examples, preference pairs). The open models that deviate most, like Qwen above, are exactly the ones a team would fine-tune. **The next step is closing the loop:** fine-tune an open model on its own governed trajectories and measure whether it violates less with the governor still on. We have not run that experiment yet.
-
----
-
 ## How we kept this honest
 
 - **Same everything except the governor.** Paired runs with identical tasks, model, prompt, seed and injected instructions. Success comes from objective checks the governor never uses to decide anything.
@@ -177,8 +148,6 @@ The export is built (`/api/export`: full traces, SFT examples, preference pairs)
 - Mostly one pair per configuration (n = 16–328 per cell). The confidence intervals are wide, and we claim no statistical significance.
 - **The governor's gains are on the open model.** Claude Haiku and Sonnet rarely deviate on these benchmarks. For them the measured value is catching rare slips (an unstated refund cap, one false "done") at no cost.
 - The benchmarks are real (AgentDojo, τ²-bench, HumanEval), but the ports, the ops-shift setup and the delegated-team setup are ours. τ² retail is graded on database state only (τ²'s LLM-judged retail assertions are not ported). In the governed Qwen shift, 3 customers were cut off by a per-run budget cap and counted as failures.
-- In the delegated team, the lead's briefs differ between runs (the model isn't deterministic), and the size of the effect depends on them. In the headline pair, the lead's briefs left out the function names, so engineers invented names and then edited QA's tests to match. In a later rerun with the same setup and seed (October 29, run for the demo video), the lead named the functions, the team mostly behaved, and the difference was small: 1 false "done" → 0, 1 violation that took effect → 0, task success 20 → 17 of 33. The Claude Code harness pair (seed 8) showed a large effect again (26 false "done" claims → 0).
+- In the delegated team, the lead's briefs differ between runs (the model isn't deterministic), and the size of the effect depends on them. In the headline pair, the lead's briefs left out the function names, so engineers invented names and then edited QA's tests to match. In a later rerun with the same setup and seed, the lead named the functions, the team mostly behaved, and the difference was small: 1 false "done" → 0, 1 violation that took effect → 0, task success 20 → 17 of 33. The Claude Code harness pair (seed 8) showed a large effect again (26 false "done" claims → 0).
 - The request-scope and same-customer laws use simple, transparent rules (keyword maps, ids mentioned in the conversation), cruder than a real permission system.
-- Fine-tuning on governed trajectories is a proposal, not a result.
 
-*Code, data and per-run reports: `README.md`, `demos.md` (including a hands-on tutorial), `docs/benchmark/`.*
