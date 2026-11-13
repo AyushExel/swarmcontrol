@@ -2,7 +2,7 @@
 
 **The control loop for AI agent swarms:** enforce the rules, correct mistakes as they happen, and turn every correction into training data.
 
-<!-- Demo video: drag swarmcontrol-demo.mp4 here in GitHub's editor -->
+<img width="960" height="600" alt="swarmcontrol-demo" src="https://github.com/user-attachments/assets/5be2bd02-6b22-49ab-b0c9-14f59450d4fa" />
 
 ## What it does
 
