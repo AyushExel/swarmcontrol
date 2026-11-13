@@ -126,6 +126,8 @@ def _default_name(rule: dict) -> str:
         return "Completion requires all checks"
     if t == "tool_restriction":
         return f"No {', '.join((p.get('blockedTools') or [])[:3])}"
+    if t == "required_reading":
+        return f"Read {', '.join(x.removeprefix('/repo/') for x in (p.get('paths') or [])[:2])} before changing files"
     if t == "conditional_obligation":
         return f"After changing {', '.join([*(p.get('whenWrites') or []), *(p.get('whenTools') or [])][:2])}, run {p.get('mustRun')}"
     return rule["sourceText"][:48]

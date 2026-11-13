@@ -197,6 +197,12 @@ function ParamsForm({ template, params, onChange }: { template: Law['template'];
         </Field>
       </div>
     );
+  if (template === 'required_reading')
+    return (
+      <Field label="Files the agent must read before changing anything (one per line)" hint="Paths inside the project are /repo/..., e.g. /repo/progress.md. Reading with the Read tool or cat/head/less counts.">
+        <textarea rows={2} value={(params.paths ?? []).join('\n')} onChange={(e) => onChange({ ...params, paths: e.target.value.split('\n').map((x) => x.trim()).filter(Boolean) })} className={cx(inputCls, 'mono h-auto py-1.5')} />
+      </Field>
+    );
   if (template === 'tool_restriction')
     return (
       <Field label="Restricted tools (one per line)" hint="Tool names as the harness reports them, e.g. Bash, Write, Edit, WebFetch, or mcp__github__* for every tool of one MCP server.">

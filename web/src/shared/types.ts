@@ -27,6 +27,7 @@ export type LawTemplate =
   | 'request_scope'
   | 'tool_restriction'
   | 'conditional_obligation'
+  | 'required_reading'
   | 'custom_bend'
   | 'contextual';
 
@@ -82,6 +83,7 @@ export interface LawParams {
   whenWrites?: string[];
   whenTools?: string[];
   mustRun?: string;
+  paths?: string[]; // required_reading: files the agent must read before it changes anything
 }
 
 /**

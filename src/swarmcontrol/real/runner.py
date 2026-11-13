@@ -11,6 +11,7 @@ This module holds the governance core and attached sessions (Claude Code hooks, 
 from __future__ import annotations
 
 import os
+import re
 import threading
 import time
 import uuid
@@ -94,6 +95,7 @@ class Agent:
     parent_roles: list[str] = field(default_factory=list)
     # conditional laws: per law, what triggered the obligation and when it was last met (a step counter)
     obligations: dict[str, dict] = field(default_factory=dict)
+    read_paths: set[str] = field(default_factory=set)
     steps: int = 0
     # an attached session's subagents still running (start times): a stop meanwhile is waiting, not finishing
     running_subagents: list[int] = field(default_factory=list)
@@ -330,6 +332,24 @@ class RealRunner(BenchmarkTools, Backends):
             if ob and params.get("mustRun") and params["mustRun"] in command:
                 a.steps += 1
                 ob["metAt"] = a.steps
+
+    def reading_laws(self, a: Agent) -> list[dict]:
+        return [l for l in self.active if l["template"] == "required_reading" and law_applies_to(l, self.names_of(a), self.roles_of(a))]
+
+    def track_reads(self, a: Agent, tool: str, inp: dict, cwd: str) -> None:
+        """After a tool ran: which required files did it read? The Read tool, or a shell command that prints the file."""
+        for l in self.reading_laws(a):
+            for p in l["params"].get("paths") or []:
+                if tool == "Read" and virtual_path(os.path.abspath(os.path.join(cwd, str(inp.get("file_path") or ""))), a.ws) == p:
+                    a.read_paths.add(p)
+                elif tool == "Bash":
+                    cmd = str(inp.get("command") or "")
+                    name = re.escape(p.removeprefix("/repo/"))
+                    if re.search(rf"\b(cat|head|tail|less|more|bat|sed|awk|grep)\b[^|;&]*?(^|[\s'\"/]){name}($|[\s'\";|&])", cmd):
+                        a.read_paths.add(p)
+
+    def reading_checkpoints(self, a: Agent) -> list[dict]:
+        return [{"kind": "reading", "lawId": l["id"], "unread": [p for p in l["params"].get("paths") or [] if p not in a.read_paths]} for l in self.reading_laws(a)]
 
     def check_obligations(self, a: Agent) -> str | None:
         """When the agent tries to finish: an unmet obligation blocks it (governed) or is recorded (observe)."""
@@ -652,6 +672,14 @@ class RealRunner(BenchmarkTools, Backends):
                     if blocked:
                         self.flush()
                         return deny(blocked)
+                if a.family == "attached":
+                    for cp in self.reading_checkpoints(a):
+                        unread = ", ".join(p.removeprefix("/repo/") for p in cp["unread"])
+                        blocked = self.gate(a, cp, "pre_action", action, [], f"Read {unread} first, then make this change.")
+                        if blocked:
+                            self.flush()
+                            return deny(blocked)
+                        self.audit(a, cp, "pre_action", action, "required_reading")
             if a.family == "attached" and tool in ("Agent", "Task"):
                 a.running_subagents.append(_now_ms())
             return {}
@@ -661,6 +689,7 @@ class RealRunner(BenchmarkTools, Backends):
             virtual = [virtual_path(t, a.ws) for t in targets]
             if a.family == "attached":
                 self.track_obligations(a, tool, inp, virtual)
+                self.track_reads(a, tool, inp, cwd)
             raw = _js(inp)
             summary = f"{tool} → {', '.join(virtual)}" if targets else f"{tool}({raw[:120]})"
             self.emit(a, "action_executed", action={"tool": "write" if targets else "read", "args": {"tool": tool, "input": raw[:2000]}, "summary": summary})

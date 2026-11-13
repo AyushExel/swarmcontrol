@@ -56,6 +56,16 @@ def translate_deterministic(text: str) -> list[dict]:
                                         f'If the agent {what}, a shell command containing "{cmd}" must run after its last such change, before it may finish.', issues))
             continue
 
+        reads = re.search(r"\b(?:must|should|shall|has to|have to|needs? to|always)\s+(?:first\s+|always\s+)?read\s+(.+)", s, re.I)
+        if reads:
+            files = [m.group(0).rstrip(".,;") for m in re.finditer(r"[\w./~-]*[\w-]\.[A-Za-z0-9]+\b|/[\w./-]+", reads.group(1))]
+            paths = [f if f.startswith("/") else "/repo/" + f.removeprefix("./") for f in files]
+            if not paths:
+                issues.append("No file named: say which file must be read, e.g. progress.md.")
+            rules.append(structured_for("required_reading", {"paths": paths}, s,
+                                        f"Before the agent changes any file, it must have read {', '.join(paths) or '?'}.", issues))
+            continue
+
         tools = re.search(r"\b(?:must not|mustn't|may not|cannot|can't|never|not allowed to|do not|don't)\s+(?:ever\s+)?(?:use|call|run)\s+(?:the\s+)?(.+?)(?:\s+tools?)?\s*\.?$", s, re.I)
         if tools:
             blocked = [re.sub(r"\s+tools?$", "", re.sub(r"^(the|any)\s+", "", x, flags=re.I), flags=re.I).strip()

@@ -122,3 +122,23 @@ def test_simulator_run_human_approval_and_repetitions(client):
             break
         time.sleep(0.1)
     assert sorted((e["config"]["seed"], e["config"]["pairRole"]) for e in reps) == [(9, "baseline"), (9, "governed"), (10, "baseline"), (10, "governed")]
+
+
+def test_required_reading_law_from_plain_english(client):
+    t = client.post("/api/laws/translate", json={"text": "agents should read progress.md file", "useLlm": False}).json()
+    rule, draft = t["rules"][0], t["drafts"][0]
+    assert rule["template"] == "required_reading" and rule["params"] == {"paths": ["/repo/progress.md"]}
+    assert draft["validation"] == "valid" and draft["proofStatus"] == "proof_checked" and draft["enforcement"] == "pre_action_block"
+    law = client.post("/api/laws/activate", json={"rules": [rule]}).json()[0]
+    assert law["name"] == "Read progress.md before changing files" and law["installed"]
+
+    out = hook(client, "PreToolUse", tool_name="Edit", tool_input={"file_path": "/w/src/a.js"})
+    assert out["hookSpecificOutput"]["permissionDecision"] == "deny"
+    assert "progress.md" in out["hookSpecificOutput"]["permissionDecisionReason"]
+    assert hook(client, "PreToolUse", tool_name="Read", tool_input={"file_path": "/w/progress.md"}) == {}
+    hook(client, "PostToolUse", tool_name="Read", tool_input={"file_path": "/w/progress.md"}, tool_response="notes")
+    assert hook(client, "PreToolUse", tool_name="Edit", tool_input={"file_path": "/w/src/a.js"}) == {}
+    # another session has read nothing yet; reading with cat counts
+    assert hook(client, "PreToolUse", session="s2", tool_name="Write", tool_input={"file_path": "/w/src/b.js"})["hookSpecificOutput"]["permissionDecision"] == "deny"
+    hook(client, "PostToolUse", session="s2", tool_name="Bash", tool_input={"command": "cat progress.md"}, tool_response="notes")
+    assert hook(client, "PreToolUse", session="s2", tool_name="Write", tool_input={"file_path": "/w/src/b.js"}) == {}

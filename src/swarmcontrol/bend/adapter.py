@@ -66,6 +66,7 @@ def applies(law: dict, cp: Checkpoint) -> bool:
         "request_scope": k == "allow" and cp.get("scope") == "capability",
         "tool_restriction": k == "tool",
         "conditional_obligation": k == "obligation" and cp.get("lawId") == law["id"],
+        "required_reading": k == "reading" and cp.get("lawId") == law["id"],
         "custom_bend": law["id"] in G.custom_gates,
     }.get(t, False)
 
@@ -197,6 +198,16 @@ def evaluate_checkpoint(law: dict, cp: Checkpoint, ctx: EvalContext) -> dict | N
             trig = re.sub(r"^You ", "", cp["trigger"])
             return done(evaluator="bend", input=inp, result=verdict(d), decision=d,
                         detail=f"{cp['obligation']} ran after the agent {trig}" if cp["met"] else f"{cp['trigger']}, but {cp['obligation']} has not run since")
+        if kind == "reading":
+            # one required check per file: the proven completion gate blocks changes until every file was read
+            vals = [p not in cp["unread"] for p in params.get("paths") or []]
+            inp = f"completion_gate([{', '.join('True{}' if v else 'False{}' for v in vals)}])"
+            if not core:
+                return fail(inp, missing)
+            d = core.completion_gate(vals)
+            unread = ", ".join(p.removeprefix("/repo/") for p in cp["unread"])
+            return done(evaluator="bend", input=inp, result=verdict(d), decision=d,
+                        detail="the required files were read before this change" if d == "allow" else f"{unread} must be read before changing files")
         if kind == "retry":
             maximum = params.get("maxAttempts", cp["max"])
             inp = f"retry_gate({cp['attempts']}n, {maximum}n)"
@@ -317,6 +328,8 @@ def bend_instance_source(template: str, params: dict) -> str | None:
         return f"{h}\n# an item outside the allowlist is blocked; an allowlisted one never is\nlaw allowlist_enforced:\n  for r: Nat\n  for xs: List<&2, Nat>\n  for e: {{G.elem(r, xs) == False{{}} : Bool}}\n  {{G.allow_gate(r, xs) == G.Block{{}} : G.Decision}}\n\ndef allowlist_enforced(r, xs, e):\n  L.unlisted_blocked(r, xs, e)\n\nlaw allowlist_permits:\n  for r: Nat\n  for xs: List<&2, Nat>\n  for e: {{G.elem(r, xs) == True{{}} : Bool}}\n  {{G.allow_gate(r, xs) == G.Allow{{}} : G.Decision}}\n\ndef allowlist_permits(r, xs, e):\n  L.listed_allowed(r, xs, e)\n"
     if template == "conditional_obligation":
         return f"{h}\n# while the obligation is unmet (one failed check), finishing is blocked\nlaw obligation_blocks_completion:\n  for pre: List<&2, Bool>\n  for post: List<&2, Bool>\n  {{G.completion_gate(List.append(&2, Bool, pre, False{{}} <> post)) == G.Block{{}} : G.Decision}}\n\ndef obligation_blocks_completion(pre, post):\n  L.failed_check_blocks_completion(pre, post)\n"
+    if template == "required_reading":
+        return f"{h}\n# while a required file is unread (one failed check), every change is blocked\nlaw unread_blocks_changes:\n  for pre: List<&2, Bool>\n  for post: List<&2, Bool>\n  {{G.completion_gate(List.append(&2, Bool, pre, False{{}} <> post)) == G.Block{{}} : G.Decision}}\n\ndef unread_blocks_changes(pre, post):\n  L.failed_check_blocks_completion(pre, post)\n"
     if template == "tool_restriction":
         return f"{h}\n# a call to a restricted tool is blocked (restricted tools are a protected set; same proven gate as protected resources)\nlaw restricted_tool_blocked:\n  for r: Nat\n  for ts: List<&2, Nat>\n  for e: {{G.elem(r, ts) == True{{}} : Bool}}\n  {{G.write_gate(r, ts) == G.Block{{}} : G.Decision}}\n\ndef restricted_tool_blocked(r, ts, e):\n  L.protected_write_blocked(r, ts, e)\n"
     if template == "file_ownership":
@@ -332,7 +345,7 @@ def enforcement_for(template: str) -> str:
     if template in ("evidence_requirements", "task_completion", "conditional_obligation"):
         return "post_action_gate"
     if template in ("protected_resources", "spending_limit", "data_policy", "file_ownership", "payee_provenance",
-                    "request_scope", "tool_restriction", "custom_bend"):
+                    "request_scope", "tool_restriction", "required_reading", "custom_bend"):
         return "pre_action_block"
     return "contextual_unenforced"
 
@@ -346,6 +359,12 @@ def validate_params(template: str, p: dict) -> tuple[list[str], list[str]]:
     warnings: list[str] = []
     if template == "tool_restriction" and not [t for t in p.get("blockedTools") or [] if t.strip()]:
         errors.append("Name at least one tool, e.g. Bash, Write or mcp__github__*.")
+    if template == "required_reading":
+        if not p.get("paths"):
+            errors.append("Name the file that must be read, e.g. /repo/progress.md.")
+        for path in p.get("paths") or []:
+            if not path.startswith("/"):
+                errors.append(f'Path "{path}" must be absolute, e.g. /repo/progress.md.')
     if template == "conditional_obligation":
         if not (p.get("mustRun") or "").strip():
             errors.append("Name the command that must run, e.g. npm test.")
@@ -507,7 +526,7 @@ def structured_for(template: str, params: dict, source_text: str, explanation: s
         "template": template,
         "params": params,
         "explanation": explanation,
-        "checkpoint": "pre_action" if template in ("protected_resources", "tool_restriction") else "trajectory" if template == "bounded_retries" else None if template == "contextual" else "post_action",
+        "checkpoint": "pre_action" if template in ("protected_resources", "tool_restriction", "required_reading") else "trajectory" if template == "bounded_retries" else None if template == "contextual" else "post_action",
         "evaluator": "llm" if template == "contextual" else "bend",
         "enforceability": "contextual" if template == "contextual" else "deterministic",
         "sourceText": source_text,
