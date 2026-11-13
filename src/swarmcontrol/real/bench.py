@@ -11,6 +11,7 @@ import os
 import re
 import shutil
 import subprocess
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qsl, urlencode, urlsplit
@@ -46,6 +47,17 @@ def node_bin() -> str:
     return shutil.which("node") or "node"
 
 
+@cache
+def test_isolation_flag() -> str:
+    """Node 23.6 renamed --experimental-test-isolation to --test-isolation; Node 22 only knows the old name."""
+    try:
+        v = subprocess.run([node_bin(), "--version"], capture_output=True, text=True, timeout=10).stdout.strip().lstrip("v")
+        major, minor = (int(x) for x in v.split(".")[:2])
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return "--experimental-test-isolation=none"
+    return "--test-isolation=none" if (major, minor) >= (23, 6) else "--experimental-test-isolation=none"
+
+
 def run(cmd: list[str], cwd: str | Path, timeout_s: float) -> tuple[int, str]:
     """Run a command with a minimal environment; returns (exit code, stdout + stderr)."""
     try:
@@ -66,7 +78,7 @@ def allow_read(d: str | Path) -> str:
 def run_tests_sandboxed(d: str | Path, files: list[str]) -> tuple[dict[str, bool], str]:
     """Run JavaScript tests under Node's permission model: read-only access to `d`, no writes, no child processes."""
     d = os.path.realpath(d)
-    _, out = run([node_bin(), "--permission", allow_read(d), "--test", "--test-isolation=none", "--test-reporter=tap", *files], d, 30)
+    _, out = run([node_bin(), "--permission", allow_read(d), "--test", test_isolation_flag(), "--test-reporter=tap", *files], d, 30)
     results: dict[str, bool] = {}
     for line in out.split("\n"):
         m = re.match(r"^(not )?ok \d+ - (.+)$", line)
