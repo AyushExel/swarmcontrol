@@ -5,6 +5,7 @@
                          [--role R] [--agent NAME] [--done-check CMD] [--observe] [--fail-open]
   swctl disconnect [--global | --team] [--dir PATH]
   swctl status [--dir PATH]
+  swctl stop                stop the server that connect started in the background
 
 Without installing the package, fetch this file from the server:
   curl -fsSL https://your-server/connect.py | python3 - connect --server https://your-server --token T"""
@@ -12,8 +13,12 @@ Without installing the package, fetch this file from the server:
 import json
 import os
 import shlex
+import signal
+import subprocess
 import sys
+import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 EVENTS = ["PreToolUse", "PostToolUse", "Stop", "SubagentStop"]
@@ -74,6 +79,74 @@ def fail(msg):
     sys.exit(1)
 
 
+def local_port(server):
+    """The port of a plain-http server on this machine, or None."""
+    u = urllib.parse.urlsplit(server)
+    return (u.port or 80) if u.scheme == "http" and u.hostname in ("localhost", "127.0.0.1", "::1") else None
+
+
+def server_pid():
+    try:
+        with open(os.path.join(gov_home(), "server.pid")) as h:
+            pid = int(h.read().strip())
+        os.kill(pid, 0)
+        return pid
+    except (OSError, ValueError):
+        return None
+
+
+def start_local_server(server, token="", timeout=120):
+    """Start `swctl serve` in the background for a server URL on this machine, if this package is installed, and wait
+    until it answers. Returns None once it does, otherwise why not. Concurrent callers (parallel hooks) start one."""
+    port = local_port(server)
+    if port is None:
+        return f"{server} is not on this machine, so it can't be started from here"
+    try:
+        import importlib.util
+
+        if importlib.util.find_spec("swarmcontrol.cli") is None:
+            raise ImportError
+    except ImportError:
+        return "the swarmcontrol package isn't installed here, so it can't start a server: run `swctl serve`"
+    home = gov_home()
+    os.makedirs(home, exist_ok=True)
+    log, lock = os.path.join(home, "server.log"), os.path.join(home, "server.lock")
+    proc = None
+    if server_pid() is None:
+        try:
+            if time.time() - os.path.getmtime(lock) > timeout:
+                os.remove(lock)  # left behind by a starter that died
+        except OSError:
+            pass
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except FileExistsError:
+            fd = None  # someone else is starting it: just wait for it
+        if fd is not None:
+            try:
+                with open(log, "ab") as out:  # cwd = the config folder, so a .env there is loaded
+                    proc = subprocess.Popen([sys.executable, "-m", "swarmcontrol.cli", "serve", "--port", str(port)], cwd=home,
+                                            stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
+                with open(os.path.join(home, "server.pid"), "w") as h:
+                    h.write(str(proc.pid))
+            finally:
+                os.close(fd)
+                os.remove(lock)
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if check(server, token)[0] == "ok":
+            return None
+        if proc is not None and proc.poll() is not None:
+            try:
+                with open(log) as h:
+                    tail = h.read()[-600:].strip()
+            except OSError:
+                tail = ""
+            return f"the server exited while starting (log: {log})" + (f":\n{tail}" if tail else "")
+        time.sleep(0.5)
+    return f"the server didn't answer within {timeout}s (log: {log})"
+
+
 def check(server, token):
     req = urllib.request.Request(f"{server}/api/status", headers={"authorization": f"Bearer {token}"} if token else {})
     try:
@@ -81,11 +154,11 @@ def check(server, token):
             s = json.loads(r.read())
     except urllib.error.HTTPError as e:
         if e.code == 401:
-            return False, "the server rejected this token" if token else "this server needs an access token: pass --token"
-        return False, f"{server} answered HTTP {e.code}"
+            return "error", "the server rejected this token" if token else "this server needs an access token: pass --token"
+        return "error", f"{server} answered HTTP {e.code}"
     except (urllib.error.URLError, OSError) as e:
-        return False, f"can't reach {server} ({getattr(e, 'reason', e)}). Is the governor running?"
-    return True, f"connected to {server} · Bend proofs {(s.get('bend') or {}).get('proofStatus', 'unknown')}"
+        return "unreachable", f"can't reach {server} ({getattr(e, 'reason', e)}). Start it with `swctl serve`"
+    return "ok", f"connected to {server} · Bend proofs {(s.get('bend') or {}).get('proofStatus', 'unknown')}"
 
 
 def hook_source(server):
@@ -139,11 +212,20 @@ class Cli:
         server = str(fl.get("server") or cfg.get("server") or DEFAULT_SERVER).rstrip("/")
         given = fl.get("server") and fl["server"].rstrip("/") != cfg.get("server")
         token = str(fl.get("token") or ("" if given else cfg.get("token") or ""))
-        ok, msg = check(server, token)
-        if not ok:
+        state, msg = check(server, token)
+        autostart = state == "unreachable" and local_port(server) is not None
+        if autostart:
+            print(f"… no server at {server}: starting one in the background (the first start compiles the Bend gates)")
+            err = start_local_server(server, token)
+            if err:
+                fail(err)
+            print(f"✓ started SwarmControl (log: {os.path.join(self.home, 'server.log')}; stop it with `swctl stop`)")
+            state, msg = check(server, token)
+        if state != "ok":
             fail(msg)
         print(f"✓ {msg}")
-        write_json(self.config, {"server": server, "token": token}, 0o600)
+        # a server connect started is restarted by the hook when it's gone (e.g. after a reboot)
+        write_json(self.config, {"server": server, "token": token, **({"autostart": True} if autostart or cfg.get("autostart") and server == cfg.get("server") else {})}, 0o600)
         print(f"✓ saved server and token to {self.config} (readable only by you)")
 
         source = hook_source(server)
@@ -221,11 +303,22 @@ class Cli:
         print(f"config      {self.config if os.path.exists(self.config) else '(none: run connect)'}")
         print(f"server      {cfg.get('server') or '(default) ' + DEFAULT_SERVER}")
         print(f"token       {token[:4] + '…' + token[-4:] if token else '(none)'}")
-        ok, msg = check(cfg.get("server") or DEFAULT_SERVER, token or "")
-        print(f"reachable   {'✓' if ok else '✗'} {msg}")
+        state, msg = check(cfg.get("server") or DEFAULT_SERVER, token or "")
+        print(f"reachable   {'✓' if state == 'ok' else '✗'} {msg}")
         for label, f in (("this project", os.path.join(self.dir, ".claude", "settings.local.json")),
                          ("team (repo)", os.path.join(self.dir, ".claude", "settings.json")), ("machine-wide", self.user_claude)):
             print(f"{label:<14}{'✓ hooks in ' + f if has_our_hooks(f) else '-'}")
+
+    def stop(self):
+        pid = server_pid()
+        if pid is None:
+            print("No background server started by `swctl connect` is running.")
+            return
+        os.kill(pid, signal.SIGTERM)
+        os.remove(os.path.join(self.home, "server.pid"))
+        print(f"✓ stopped the background server (pid {pid})")
+        if read_json(self.config).get("autostart"):
+            print("  Claude Code sessions connected to it will start it again on their next action; `swctl disconnect` removes the hooks.")
 
 
 HELP = """Connect Claude Code to a SwarmControl.
@@ -235,7 +328,8 @@ HELP = """Connect Claude Code to a SwarmControl.
          --team                                        write hooks into the repo, to commit for the whole team
          --role R --agent NAME --done-check "npm test" --observe --fail-open   session defaults
   swctl disconnect [--global | --team]
-  swctl status"""
+  swctl status
+  swctl stop                                     stop the server connect started in the background"""
 
 
 def main(argv=None):
@@ -247,6 +341,8 @@ def main(argv=None):
         cli.disconnect()
     elif cmd == "status":
         cli.status()
+    elif cmd == "stop":
+        cli.stop()
     else:
         print(HELP + f"\n\nThe server URL and token are saved once in {cli.config}.")
 

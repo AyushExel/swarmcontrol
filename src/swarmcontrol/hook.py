@@ -98,12 +98,32 @@ def wait_for_human(experiment, agent):
     return {}  # nobody decided in time: let the session stop; an approval then needs a message in the terminal
 
 
-try:
+def restart_server():
+    """Start the local server again if `swctl connect` started it and it's gone (e.g. after a reboot)."""
+    if not saved.get("autostart") or api != saved.get("server"):
+        return False
+    try:
+        from swarmcontrol.connect import start_local_server
+    except ImportError:
+        return False
+    return start_local_server(api, api_token, timeout=45) is None
+
+
+def forward():
     out = call("/api/hooks/claude-code", {"payload": payload, "identity": identity, "doneCheck": done_check})
     wait = out.pop("governorWait", None)
     if wait:
         out.update(wait_for_human(wait["experiment"], wait["agent"]))
     sys.stdout.write(json.dumps(out))
+
+
+try:
+    try:
+        forward()
+    except urllib.error.URLError:
+        if not restart_server():
+            raise
+        forward()
 except Exception as e:  # noqa: BLE001 - any failure to reach the governor
     if env.get("SC_FAIL_OPEN") == "1" or event != "PreToolUse":
         sys.exit(0)

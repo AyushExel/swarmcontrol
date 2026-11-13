@@ -154,3 +154,37 @@ def test_hook_fails_closed_when_the_governor_is_unreachable(tmp_path):
     out = run_hook("http://127.0.0.1:9", {"hook_event_name": "PreToolUse", "tool_name": "Bash", "cwd": str(tmp_path)}, tmp_path)
     assert out["hookSpecificOutput"]["permissionDecision"] == "deny"
     assert run_hook("http://127.0.0.1:9", {"hook_event_name": "PreToolUse", "cwd": str(tmp_path)}, tmp_path, {"SC_FAIL_OPEN": "1"}) is None
+
+
+def test_connect_starts_a_local_server_and_the_hook_restarts_it(sb):
+    """No server running: connect starts one in the background; after `swctl stop`, the next hook call starts it again."""
+    import socket
+    import urllib.request
+
+    root, cli = sb
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        port = s.getsockname()[1]
+    url = f"http://127.0.0.1:{port}"
+    cfg = root / "cfg"
+    try:
+        r = cli("connect", "--server", url, "--dir", str(root))
+        assert "started SwarmControl" in r.stdout and "connected to" in r.stdout
+        assert j(cfg / "config.json")["autostart"] is True
+        assert "proof" in urllib.request.urlopen(f"{url}/api/status", timeout=10).read().decode()
+
+        assert "stopped the background server" in cli("stop").stdout
+        for _ in range(50):  # wait for the port to close
+            try:
+                urllib.request.urlopen(f"{url}/api/status", timeout=1)
+            except OSError:
+                break
+            __import__("time").sleep(0.2)
+        env = {**os.environ, "HOME": str(root / "home"), "SWARMCONTROL_HOME": str(cfg)}
+        env.pop("SC_API", None)
+        out = subprocess.run([sys.executable, str(PKG / "hook.py")], env=env, capture_output=True, text=True, timeout=90,
+                             input=json.dumps({"hook_event_name": "PreToolUse", "tool_name": "Read", "tool_input": {"file_path": "x"}, "cwd": str(root), "session_id": "s"}))
+        assert "unreachable" not in out.stdout
+        urllib.request.urlopen(f"{url}/api/status", timeout=10)
+    finally:
+        cli("stop", check=False)

@@ -46,7 +46,7 @@ def main() -> None:
         sys.exit(bend_check())
     else:
         connect.main(args)
-        if not args or args[0] not in ("connect", "disconnect", "status"):
+        if not args or args[0] not in ("connect", "disconnect", "status", "stop"):
             print("\n  swctl serve [--host H] [--port P] [--db FILE]   run the governor and dashboard")
             print("  swctl bench run|report|delegated-report|shift-report|summarize|smoke|demo   benchmarks (maintainers)")
             print("  swctl bend-check                               compile the gates and check the proofs")

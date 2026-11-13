@@ -29,7 +29,7 @@ swctl serve                    # dashboard on http://localhost:8787
 
 ```bash
 cd my-project
-swctl connect                  # installs the Claude Code hooks
+swctl connect                  # installs the Claude Code hooks (and starts the server if it isn't running)
 claude                         # use Claude Code as usual
 ```
 
