@@ -74,8 +74,10 @@ def translate_deterministic(text: str) -> list[dict]:
             rules.append(structured_for("tool_restriction", {"blockedTools": blocked}, s, f"Before any tool call executes, block it if the tool is: {', '.join(blocked)}.", issues))
             continue
 
-        if re.search(r"(protected|read-?only|off-?limits)", lower) or (re.search(r"\b(modify|write|edit|change|delete|overwrite|touch)\b", lower) and re.search(r"\b(file|resource|config|secret|path)", lower)):
-            paths = [m.group(1) for m in re.finditer(r"(/[\w.\-/]+)", s)]
+        named = [f.rstrip(".,;") for f in re.findall(r"(?<![\w/.])(?:/[\w.\-/*]+|\.?[\w\-/]*[\w\-]\.[A-Za-z0-9]+\b|\.[A-Za-z][\w\-]*)", s)]
+        forbids = re.search(r"\b(?:must not|mustn't|may not|cannot|can't|never|not allowed to|do not|don't|shouldn't|should not)\s+(?:ever\s+)?(?:modify|write|edit|change|delete|overwrite|touch)\b", lower)
+        if re.search(r"(protected|read-?only|off-?limits)", lower) or (forbids and named) or (re.search(r"\b(modify|write|edit|change|delete|overwrite|touch)\b", lower) and re.search(r"\b(file|resource|config|secret|path)", lower)):
+            paths = [f if f.startswith("/") else "/repo/" + f.removeprefix("./") for f in named]
             if not paths:
                 paths = list(DEFAULT_PROTECTED)
                 issues.append(f"No paths named; using the sandbox's designated protected set ({', '.join(DEFAULT_PROTECTED)}). Edit the paths if that is not what you meant.")

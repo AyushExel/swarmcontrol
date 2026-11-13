@@ -45,6 +45,21 @@ Click **Generate structured rules**. SwarmControl shows what it understood, chec
 
 Full walkthrough: [tutorials/claude-code.md](https://github.com/AyushExel/swarmcontrol/blob/main/tutorials/claude-code.md).
 
+## Laws you can write
+
+Each law is translated into one of these types. Write it in plain English, and the Laws page shows which type it matched before you activate it. Name files directly (`.env`, `package.json`); folders in your project start with `/repo/`, e.g. `/repo/test/`.
+
+| Law type | Example | Checked |
+|---|---|---|
+| Protected files | "Agents must not modify /repo/test/ or .env." | before every write |
+| Restricted tools | "Reviewers must not use Bash." · "Agents must not use WebFetch or mcp__github__*." | before every tool call |
+| Required reading | "Agents should read progress.md before making changes." | before every write |
+| Do X before finishing | "Agents that modify /repo/src/ must run npm test before finishing." | when the agent stops |
+| Retry limit | "Agents must not make more than three consecutive unsuccessful attempts." | after each blocked action |
+| Done means done | "Agents must not claim a task is complete until all checks pass." (pair with `SC_DONE_CHECK`) | when the agent stops |
+
+**Not enforced yet:** rules that need judgment, like "reports should sound professional" or "ask the user before deleting anything". They are flagged as *contextual* and can't be activated. If your rule isn't recognized, rephrase it like an example above, write the gate yourself in the **Bend** tab, or [add a new law type](https://github.com/AyushExel/swarmcontrol/blob/main/CONTRIBUTING.md#adding-a-law-type).
+
 ## Benchmarks
 
 The same tasks and model (Qwen 3 Coder 30B), with SwarmControl off and on:
@@ -61,6 +76,7 @@ Claude Haiku and Sonnet rarely break the rules, so there results are unchanged a
 ## Coming soon
 
 - **Codex** support.
+- **More law types**, including judgment-based rules checked by a model.
 
 Contributions are welcome: see [CONTRIBUTING.md](https://github.com/AyushExel/swarmcontrol/blob/main/CONTRIBUTING.md).
 
